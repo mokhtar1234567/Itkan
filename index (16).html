@@ -1,0 +1,1371 @@
+<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="robots" content="noindex"><meta name="theme-color" content="#0f766e"><title>Itkan Cabinet</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Cairo:wght@400;600&display=swap">
+<style>
+/* Layout: blue-style sidebar + top bar; content = quick actions (centre) + waiting-room rail (clock + 4 gradient cards) on the right. */
+:root{
+  --bg:#f6f8fb;--card:#ffffff;--border:#e7ebf1;--text:#1f2430;--muted:#7a8394;
+  --primary:#2f6fde;--primary-soft:#e7effc;
+  --green:#18a058;--green-soft:#e3f6ec;--orange:#f08c2e;--orange-soft:#fdf0e3;
+  --teal:#14a3a3;--teal-soft:#e0f5f5;--purple:#7c5ce0;--purple-soft:#efeafd;--pink:#e0457b;--pink-soft:#fde8ef;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 4px 16px rgba(16,24,40,.04);
+  --font:"Plus Jakarta Sans",system-ui,"Segoe UI",Tahoma,sans-serif;
+  --side:272px;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0d1320;--card:#151d2d;--border:#243049;--text:#e7ecf6;--muted:#93a0b8;
+  --primary:#6b9bff;--primary-soft:#1b2a4a;--green:#4cd08d;--green-soft:#15302a;--orange:#ffab5c;--orange-soft:#33251a;
+  --teal:#3ccfcf;--teal-soft:#123234;--purple:#a58bff;--purple-soft:#271f45;--pink:#ff7aa8;--pink-soft:#3a1a29;--shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0d1320;--card:#151d2d;--border:#243049;--text:#e7ecf6;--muted:#93a0b8;
+  --primary:#6b9bff;--primary-soft:#1b2a4a;--green:#4cd08d;--green-soft:#15302a;--orange:#ffab5c;--orange-soft:#33251a;
+  --teal:#3ccfcf;--teal-soft:#123234;--purple:#a58bff;--purple-soft:#271f45;--pink:#ff7aa8;--pink-soft:#3a1a29;--shadow:0 1px 2px rgba(0,0,0,.3),0 4px 16px rgba(0,0,0,.25);color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0}
+html,body{height:100%}
+body{background:var(--bg);color:var(--text);font-family:var(--font);font-size:15px}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,a:focus-visible{outline:2px solid var(--primary);outline-offset:2px}
+svg.i{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex:none}
+
+/* sidebar (blue) */
+.sidebar{position:fixed;top:0;bottom:0;left:0;width:var(--side);background:var(--card);border-right:1px solid var(--border);z-index:20;
+  display:flex;flex-direction:column;gap:22px;
+  padding-block:calc(22px + env(safe-area-inset-top,0px)) calc(16px + env(safe-area-inset-bottom,0px));
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:16px}
+.brand{display:flex;align-items:center;gap:8px;padding:2px 8px 6px}
+.brand .mark{width:60px;flex:none}
+.brand .mark img{width:100%;height:auto;display:block}
+.brand b{font-size:32px;font-weight:700;color:#1667c7;letter-spacing:-.5px;line-height:1;display:block}
+.brand small{display:block;font-size:13px;color:#1667c7;margin-top:2px;margin-inline-start:2px;letter-spacing:.01em}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .brand b,:root:not([data-theme="light"]) .brand small{color:#6aa8f5}}
+:root[data-theme="dark"] .brand b,:root[data-theme="dark"] .brand small{color:#6aa8f5}
+nav{display:flex;flex-direction:column;gap:2px}
+nav a{position:relative;display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;color:var(--text);text-decoration:none;font-size:15.5px}
+nav a.on{background:var(--primary-soft);color:var(--primary);font-weight:600}
+nav a.on::before{content:"";position:absolute;left:-16px;top:8px;bottom:8px;width:3px;border-radius:0 3px 3px 0;background:var(--primary)}
+.side-note{margin-top:auto;font-size:12px;color:var(--muted);padding-inline:8px;line-height:1.5}
+
+/* top bar */
+main{margin-left:var(--side);min-height:100%}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:30;background:var(--card)}
+.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:10;height:68px;background:var(--card);border-bottom:1px solid var(--border);
+  display:flex;align-items:center;gap:12px;padding-left:max(24px,env(safe-area-inset-left,0px));padding-right:max(24px,env(safe-area-inset-right,0px))}
+.ibtn{width:36px;height:36px;border-radius:9px;border:1px solid var(--border);background:var(--card);display:grid;place-items:center;color:var(--muted)}
+.ibtn:hover{color:var(--primary);border-color:var(--primary)}
+.burger{display:none}
+.crumb{font-weight:500}
+.top .sp{flex:1}
+.avatar{display:flex;align-items:center;gap:10px}
+.avatar .ph{width:38px;height:38px;border-radius:50%;border:2px solid var(--green);display:grid;place-items:center;font-size:13px;font-weight:700;color:var(--green);background:var(--green-soft)}
+.avatar b{font-size:14px;display:block;line-height:1.2}.avatar small{color:var(--muted);font-size:12px}
+
+/* content */
+.content{padding-block:28px 48px;padding-left:max(26px,env(safe-area-inset-left,0px));padding-right:max(26px,env(safe-area-inset-right,0px));max-width:1400px}
+.layout{display:grid;grid-template-columns:minmax(0,1fr) 320px;gap:28px;align-items:start}
+.page-title{font-size:28px;font-weight:600;margin:4px 0 6px;letter-spacing:-.01em}
+.page-sub{color:var(--muted);margin:0 0 28px}
+.section-title{font-size:18px;font-weight:500;margin:0}
+.section-sub{color:var(--muted);font-size:13px;margin:4px 0 14px}
+
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:22px}
+@media (max-width:1250px) and (min-width:1101px){.grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+.qa{position:relative;overflow:hidden;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:20px 20px 22px;
+  text-align:start;box-shadow:var(--shadow);min-height:150px;transition:transform .12s,box-shadow .12s,border-color .12s}
+.qa:hover{transform:translateY(-2px);box-shadow:0 8px 24px rgba(16,24,40,.08)}
+.qa .ic{width:48px;height:48px;border-radius:10px;display:grid;place-items:center;margin-bottom:20px}
+.qa b{display:block;font-weight:600;font-size:16px}
+.qa span{color:var(--muted);font-size:13px}
+.qa .ghost{position:absolute;right:-14px;bottom:-18px;width:110px;height:110px;opacity:.08;stroke-width:1.2}
+.tone-blue .ic{background:var(--primary-soft);color:var(--primary)}.tone-blue .ghost{color:var(--primary)}.tone-blue:hover{border-color:var(--primary)}
+.tone-orange .ic{background:var(--orange-soft);color:var(--orange)}.tone-orange .ghost{color:var(--orange)}.tone-orange:hover{border-color:var(--orange)}
+.tone-teal .ic{background:var(--teal-soft);color:var(--teal)}.tone-teal .ghost{color:var(--teal)}.tone-teal:hover{border-color:var(--teal)}
+.tone-purple .ic{background:var(--purple-soft);color:var(--purple)}.tone-purple .ghost{color:var(--purple)}.tone-purple:hover{border-color:var(--purple)}
+.tone-pink .ic{background:var(--pink-soft);color:var(--pink)}.tone-pink .ghost{color:var(--pink)}.tone-pink:hover{border-color:var(--pink)}
+.tone-green .ic{background:var(--green-soft);color:var(--green)}.tone-green .ghost{color:var(--green)}.tone-green:hover{border-color:var(--green)}
+.hint{margin-top:16px;color:var(--muted);font-size:13px;display:flex;align-items:center;gap:8px}
+.hint svg{width:16px;height:16px}
+.hint[hidden]{display:none}
+.psearch{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:16px;padding:8px 8px 8px 10px;box-shadow:var(--shadow);margin-bottom:30px;transition:border-color .15s,box-shadow .15s}
+.psearch:focus-within{border-color:var(--primary);box-shadow:0 0 0 4px var(--primary-soft),0 8px 24px rgba(16,24,40,.06)}
+.ps-ic{width:44px;height:44px;border-radius:12px;background:var(--primary-soft);color:var(--primary);display:grid;place-items:center;flex:none}
+.psearch input{flex:1;min-width:0;border:0;outline:0;background:none;font:inherit;font-size:17px;color:var(--text);height:44px}
+.psearch input::placeholder{color:var(--muted);opacity:.6;font-weight:400}
+.psearch input::-webkit-search-cancel-button{cursor:pointer}
+.ps-go{width:44px;height:44px;border-radius:12px;border:0;background:var(--primary);color:#fff;display:grid;place-items:center;flex:none;opacity:.35;transition:opacity .15s}
+.psearch:focus-within .ps-go,.ps-go.on{opacity:1}
+
+/* right rail: clock + waiting-room cards (DentaDesk, refined) */
+.rail{display:flex;flex-direction:column;gap:14px}
+.clock{border-radius:18px;overflow:hidden;background:var(--card);border:1px solid var(--border);box-shadow:var(--shadow)}
+.clock .d{background:linear-gradient(120deg,#0f7f78 0%,#16a39b 55%,#3cc7b5 100%);color:#fff;text-align:center;padding:12px 10px 10px}
+.clock .d b{display:block;font-size:20px;font-weight:700;letter-spacing:.04em;font-variant-numeric:tabular-nums}
+.clock .d small{font-size:13px;opacity:.9;text-transform:capitalize}
+.clock .t{text-align:center;font-size:38px;font-weight:700;color:var(--teal);padding:12px 0 14px;font-variant-numeric:tabular-nums;letter-spacing:.02em}
+.wr{position:relative;overflow:hidden;border-radius:18px;color:#fff;padding:18px 20px;min-height:94px;display:flex;align-items:center;gap:16px;
+  box-shadow:0 10px 24px -10px var(--glow),inset 0 1px 0 rgba(255,255,255,.28);transition:transform .15s}
+.wr:hover{transform:translateY(-2px)}
+.wr::before{content:"";position:absolute;inset:0;background:radial-gradient(120% 90% at 0% 0%,rgba(255,255,255,.32),rgba(255,255,255,0) 55%);pointer-events:none}
+.wr::after{content:"";position:absolute;width:150px;height:150px;right:-50px;bottom:-70px;border-radius:50%;background:rgba(255,255,255,.12);pointer-events:none}
+.wr .bub{position:relative;z-index:1;width:46px;height:46px;border-radius:14px;background:rgba(255,255,255,.2);display:grid;place-items:center;flex:none;backdrop-filter:blur(2px)}
+.wr .bub svg{width:22px;height:22px}
+.wr .tx{position:relative;z-index:1;min-width:0}
+.wr b{display:block;font-size:30px;font-weight:800;line-height:1.05;font-variant-numeric:tabular-nums;text-shadow:0 1px 2px rgba(0,0,0,.12)}
+.wr b small{font-size:20px;font-weight:600;opacity:.85}
+.wr span{font-size:14px;font-weight:500;opacity:.95}
+.wr.red{background:linear-gradient(135deg,#ff8a7a 0%,#f5506a 48%,#d9305a 100%);--glow:rgba(229,62,92,.55)}
+.wr.green{background:linear-gradient(135deg,#7be3a7 0%,#2fc07e 48%,#139a6a 100%);--glow:rgba(31,170,110,.5)}
+.wr.orange{background:linear-gradient(135deg,#ffd27a 0%,#fda44a 48%,#f27a2e 100%);--glow:rgba(244,140,50,.5)}
+.wr.violet{background:linear-gradient(135deg,#b9a3ff 0%,#8d68f5 48%,#6a44dc 100%);--glow:rgba(124,92,224,.55)}
+.sample{font-size:12px;color:var(--muted);text-align:center}
+
+.scrim{display:none}
+@media (max-width:1100px){
+  .layout{grid-template-columns:1fr}
+  .rail{order:-1;display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}
+  .clock,.sample{grid-column:1/-1}
+  .clock{display:flex}.clock .d{flex:1;display:flex;flex-direction:column;justify-content:center}.clock .t{flex:1;display:grid;place-items:center;padding:10px}
+}
+@media (max-width:860px){
+  .sidebar{transform:translateX(-100%);transition:transform .2s;box-shadow:0 0 40px rgba(0,0,0,.18)}
+  .sidebar.open{transform:none}
+  main{margin-left:0}
+  .burger{display:grid}
+  .scrim.on{display:block;position:fixed;inset:0;background:rgba(15,23,42,.4);z-index:15}
+  .top,.content{padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+  .avatar .who{display:none}
+  .grid{grid-template-columns:1fr}
+  .qa{min-height:0;display:grid;grid-template-columns:48px 1fr;column-gap:14px;align-items:center}
+  .qa .ic{margin:0;grid-row:span 2}
+}
+@media (max-width:480px){
+  .rail{grid-template-columns:1fr}
+  .clock .t{font-size:30px}
+  .page-title{font-size:24px}
+}
+
+/* ===== Nouveau patient (DentaDesk layout) ===== */
+.view[hidden]{display:none!important}
+.fbar{display:flex;align-items:center;gap:12px;margin-bottom:22px;flex-wrap:wrap}
+.btn{height:42px;border-radius:10px;border:0;padding:0 18px;display:inline-flex;align-items:center;gap:8px;font-weight:600}
+.btn.pri{background:var(--primary);color:#fff;box-shadow:0 6px 16px -6px rgba(47,111,222,.6)}
+.btn.pri:hover{filter:brightness(1.06)}
+.back{width:42px;height:42px;border-radius:10px;border:1px solid var(--border);background:var(--card);display:grid;place-items:center;color:#e5484d}
+.fbar h1{margin:0;font-size:22px;font-weight:600;flex:1;text-align:center}
+.fgrid{display:grid;grid-template-columns:300px minmax(0,1fr);gap:22px;align-items:start}
+.fcol{display:flex;flex-direction:column;gap:18px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
+.card.pad{padding:18px}
+.ctitle{font-weight:700;color:var(--primary);margin:0 0 12px;font-size:15px}
+.inp{width:100%;height:44px;border:1.5px solid var(--border);border-radius:10px;padding:0 12px;font:inherit;font-size:15px;background:var(--card);color:var(--text);outline:0}
+.inp:focus{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.inp:disabled{background:var(--bg);color:var(--muted)}
+.inp.bad{border-color:#e5484d;box-shadow:0 0 0 3px rgba(229,72,77,.12)}
+select.inp{padding-right:8px}
+.fl{display:block;font-size:13px;color:var(--muted);margin-top:6px}
+.fl em{color:#e5484d;font-style:normal}
+.credit{display:flex;gap:8px}
+.credit .inp{flex:1;font-weight:700;background:var(--green-soft);border-color:transparent;color:var(--green)}
+.sq{width:44px;height:44px;border-radius:10px;border:1.5px solid var(--border);background:var(--card);font-size:20px;line-height:1;display:grid;place-items:center}
+.sq:hover{border-color:var(--primary);color:var(--primary)}
+.conv{display:grid;grid-template-columns:auto 1fr;gap:12px;align-items:start;margin-top:14px}
+.chk{display:flex;flex-direction:column;align-items:center;gap:6px;font-size:13px;color:var(--muted);padding-top:6px}
+.chk input{width:22px;height:22px;accent-color:var(--primary)}
+.photo{aspect-ratio:1/1;max-width:100%;border-radius:12px;background:var(--bg);display:grid;place-items:center;overflow:hidden;color:var(--muted)}
+.photo img{width:100%;height:100%;object-fit:cover}
+.photo svg{width:42%;height:42%;stroke-width:1.4;opacity:.55}
+.btn.wide{width:100%;justify-content:center;margin-top:12px}
+.tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:14px 0}
+.tile{background:var(--bg);border-radius:10px;padding:10px 4px;text-align:center;font-size:12px;color:var(--muted)}
+.tile svg{width:17px;height:17px;display:block;margin:0 auto 4px}
+.tile b{display:block;color:var(--text);font-size:15px;margin-top:2px}
+.dhead{padding:16px 22px;border-radius:16px 16px 0 0;background:linear-gradient(90deg,var(--primary-soft),transparent);font-weight:700;font-size:17px;color:var(--primary)}
+.dbody{padding:6px 22px 24px}
+.sect{font-size:12.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--primary);margin:22px 0 12px}
+.g12{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:16px 16px}
+.c2{grid-column:span 2}.c3{grid-column:span 3}.c4{grid-column:span 4}.c8{grid-column:span 8}.c12{grid-column:span 12}
+.tel{display:flex}
+.tel select{width:96px;border-top-right-radius:0;border-bottom-right-radius:0;border-right:0;font-size:14px}
+.tel input{border-top-left-radius:0;border-bottom-left-radius:0}
+.tags{min-height:48px;border:1.5px solid var(--border);border-radius:10px;padding:6px 6px 6px 10px;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.tags:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.tags input{border:0;outline:0;background:none;flex:1;min-width:140px;font:inherit;color:var(--text);height:34px}
+.tag{display:inline-flex;align-items:center;gap:6px;background:var(--orange-soft);color:var(--orange);border-radius:20px;padding:4px 6px 4px 12px;font-size:13px;font-weight:600}
+.tag button{border:0;background:none;color:inherit;font-size:15px;line-height:1;padding:0 4px}
+.tags .sq{width:34px;height:34px;font-size:18px;color:var(--green)}
+.ar{direction:rtl;font-family:"Cairo","Plus Jakarta Sans",Tahoma,sans-serif}
+.toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--card);padding:12px 18px;border-radius:12px;font-weight:500;z-index:50;max-width:calc(100% - 32px);box-shadow:0 10px 30px rgba(0,0,0,.2)}
+.toast[hidden]{display:none}
+@media (max-width:1180px){.g12 .c2,.g12 .c3,.g12 .c4{grid-column:span 6}.g12 .c8{grid-column:span 12}}
+@media (max-width:980px){.fgrid{grid-template-columns:1fr}.fcol{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));order:2}}
+@media (max-width:600px){.fcol{grid-template-columns:1fr}.g12 .c2,.g12 .c3,.g12 .c4{grid-column:span 12}.fbar h1{font-size:18px;text-align:start}.dbody{padding:4px 16px 20px}.dhead{padding:14px 16px}}
+
+/* ===== DentaDesk mode (Nouveau patient) ===== */
+.ddtop{display:none}
+body.dd{
+  --primary:#18807b;--primary-soft:#e3f5f3;--lab:#1c6e69;
+  background:#f8fafc}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) body.dd{--primary:#3cc2b6;--primary-soft:#123331;--lab:#7fd3cb;background:var(--bg)}}
+:root[data-theme="dark"] body.dd{--primary:#3cc2b6;--primary-soft:#123331;--lab:#7fd3cb;background:var(--bg)}
+body.dd::before{background:#176764}
+body.dd .sidebar,body.dd .scrim,body.dd .top{display:none}
+body.dd main{margin-left:0}
+body.dd .ddtop{position:sticky;top:env(safe-area-inset-top,0px);z-index:12;display:flex;align-items:center;gap:6px;height:56px;
+  background:linear-gradient(90deg,#176764 0%,#18807b 45%,#1fa89b 100%);color:#fff;
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.ddbrand{display:flex;align-items:center;gap:8px;background:#fff;color:#1f2430;border-radius:8px;padding:5px 10px 5px 6px;font-weight:600;font-size:16px;margin-right:12px;text-decoration:none}
+.ddbrand i{width:24px;height:24px;border-radius:6px;background:linear-gradient(140deg,#24a099,#18807b);display:grid;place-items:center;color:#fff}
+.ddbrand i svg{width:15px;height:15px}
+.ddbrand span{color:#18807b}
+.ddic{position:relative;width:36px;height:36px;border-radius:8px;border:0;background:none;color:#fff;display:grid;place-items:center}
+.ddic:hover,.ddic.on{background:rgba(255,255,255,.18)}
+.ddic sup{position:absolute;top:1px;right:1px;min-width:16px;height:16px;border-radius:8px;background:#34d399;color:#064e3b;font-size:10px;font-weight:700;display:grid;place-items:center}
+.ddchip{display:inline-flex;align-items:center;gap:6px;background:rgba(255,255,255,.16);border-radius:20px;padding:4px 12px;font-size:13px;font-weight:600;margin-left:10px;white-space:nowrap}
+.ddchip svg{width:15px;height:15px}
+.ddsp{flex:1}
+.ddsearch{display:flex;align-items:center;gap:8px;width:240px;height:34px;border-radius:20px;border:1px solid rgba(255,255,255,.45);background:rgba(255,255,255,.12);padding:0 12px;color:#fff}
+.ddsearch input{border:0;outline:0;background:none;color:#fff;font:inherit;font-size:14px;flex:1;min-width:0}
+.ddsearch input::placeholder{color:rgba(255,255,255,.85)}
+.ddsearch svg{width:16px;height:16px}
+.ddme{display:flex;align-items:center;gap:8px;margin-left:8px}
+.ddme .av{width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.22);display:grid;place-items:center;font-size:12px;font-weight:700}
+.ddme b{display:block;font-size:14px;line-height:1.15}.ddme small{font-size:11.5px;opacity:.85}
+body.dd .content{padding:0;max-width:none}
+body.dd .fbar{background:var(--card);border-bottom:1px solid var(--border);margin:0;padding-block:10px;
+  padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));position:relative}
+body.dd .fbar h1{position:absolute;left:50%;transform:translateX(-50%);font-size:17px;white-space:nowrap}
+body.dd .btn{height:36px;border-radius:8px;padding:0 14px}
+body.dd .btn.pri{box-shadow:none}
+body.dd .back{border:0;background:none;width:36px;height:36px}
+body.dd .fgrid{max-width:1232px;margin:0 auto;padding-block:24px 40px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px));grid-template-columns:300px minmax(0,1fr);gap:18px}
+body.dd .card{border-radius:16px;box-shadow:0 1px 2px rgba(16,24,40,.04)}
+body.dd .ctitle{color:var(--lab)}
+body.dd .dhead{background:linear-gradient(90deg,var(--primary-soft),transparent);color:var(--lab);font-size:16px}
+body.dd .sect{color:var(--lab);font-size:12px}
+body.dd .fl{color:var(--lab);font-size:12.5px}
+body.dd .inp{height:40px;border-width:1px;border-radius:8px;font-size:14.5px}
+body.dd .sq{width:40px;height:40px;border-width:1px;border-radius:8px}
+body.dd .credit .inp{border:1px solid #9be3b7;background:var(--green-soft);color:var(--text)}
+body.dd .g12{gap:14px 16px}
+body.dd .tags{border-width:1px;border-radius:8px}
+@media (max-width:1100px){.ddchip,.ddme .who{display:none}.ddsearch{width:170px}}
+@media (max-width:760px){body.dd .ddtop .ddic:not(.home){display:none}.ddsearch{flex:1;width:auto;min-width:0}.ddme{display:none}.ddsp{display:none}.ddbrand{margin-right:4px}
+  body.dd .fbar h1{position:static;transform:none}}
+@media (max-width:980px){body.dd .fgrid{grid-template-columns:1fr}}
+
+/* ===== Dossiers patients (DentaDesk list) ===== */
+.lwrap{max-width:1232px;margin:0 auto;padding-block:24px 40px;padding-left:max(20px,env(safe-area-inset-left,0px));padding-right:max(20px,env(safe-area-inset-right,0px))}
+.lhead{display:flex;align-items:center;gap:14px;margin-bottom:16px;flex-wrap:wrap}
+.lsearch{display:flex;align-items:center;gap:8px;width:384px;max-width:100%;height:40px;border:1px solid var(--border);border-radius:8px;background:var(--card);padding:0 12px;color:var(--muted)}
+.lsearch:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft)}
+.lsearch svg{width:17px;height:17px}
+.lsearch input{border:0;outline:0;background:none;flex:1;min-width:0;font:inherit;font-size:14.5px;color:var(--text)}
+#l-count{color:var(--text);font-size:14.5px}
+.ltable{overflow:hidden}
+.lrow{display:grid;grid-template-columns:minmax(0,2.2fr) minmax(0,1fr) minmax(0,1.3fr) minmax(0,1.2fr) minmax(0,1.1fr) 24px;gap:12px;align-items:center;padding:12px 18px;border-top:1px solid var(--border);width:100%;background:none;border-left:0;border-right:0;border-bottom:0;text-align:start;font-size:14.5px}
+.lrow.h{border-top:0;font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--lab,var(--muted));padding-block:12px;background:var(--primary-soft)}
+button.lrow:hover{background:var(--bg)}
+.lname{display:flex;align-items:center;gap:12px;min-width:0}
+.lname .av{width:38px;height:38px;border-radius:50%;display:grid;place-items:center;font-size:13px;font-weight:700;flex:none;background:var(--primary-soft);color:var(--primary)}
+.lname .av.f{background:var(--pink-soft);color:var(--pink)}
+.lname b{font-weight:600;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lname small{color:var(--muted);font-size:12.5px}
+.badge{display:inline-block;font-size:11px;font-weight:600;padding:1px 8px;border-radius:20px;background:var(--orange-soft);color:var(--orange);margin-inline-start:6px;vertical-align:1px}
+.badge.new{background:var(--green-soft);color:var(--green)}
+.lmuted{color:var(--muted)}
+.lrow svg.chev{width:18px;height:18px;color:var(--muted)}
+.lempty{border:1.5px dashed var(--border);border-radius:16px;padding:40px 20px;display:flex;flex-direction:column;align-items:center;gap:14px;color:var(--text);text-align:center}
+.lempty svg{width:40px;height:40px;color:var(--muted);stroke-width:1.5}
+@media (max-width:860px){.lrow{grid-template-columns:minmax(0,1fr) auto 24px}.lrow .c-age,.lrow .c-wil,.lrow .c-last{display:none}}
+
+/* ===== Salle d'attente (DentaDesk) ===== */
+.wstrip{display:grid;grid-template-columns:minmax(0,1.4fr) repeat(4,minmax(0,1fr));gap:14px;margin-bottom:18px}
+.wstrip .clock{display:flex}
+.wstrip .clock .d{flex:1;display:flex;flex-direction:column;justify-content:center;padding:10px}
+.wstrip .clock .d b{font-size:15px;white-space:nowrap}.wstrip .clock .d small{white-space:nowrap;font-size:12px}
+.wstrip .clock .t{flex:1;display:grid;place-items:center;font-size:28px;padding:8px}
+.wstrip .wr{min-height:84px;padding:14px 16px;gap:12px}
+.wstrip .wr b{font-size:26px}.wstrip .wr span{font-size:12.5px;line-height:1.25;display:block}
+.wstrip .wr .bub{width:40px;height:40px;border-radius:12px}
+.wfil{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px 16px;margin-bottom:16px}
+.wfil .fl{margin:0 0 4px}
+.wres{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;background:var(--primary-soft);color:var(--lab);border-radius:10px;padding:8px 10px 8px 16px;margin-bottom:16px;font-weight:600}
+.wres .lsearch{width:340px;background:var(--card);font-weight:400}
+.wcard{overflow:hidden}
+.wch{display:flex;align-items:center;gap:12px;padding:14px 18px;flex-wrap:wrap;border-bottom:1px solid var(--border)}
+.wch h2{margin:0;font-size:16px;color:var(--lab);display:flex;align-items:center;gap:8px}
+.wch h2 svg{width:20px;height:20px}
+.wch .sp{flex:1}
+.wch .inp{width:auto;height:34px;padding:0 8px}
+.wpg{display:flex;gap:4px}.wpg button{width:34px;height:34px;border:1px solid var(--border);border-radius:8px;background:var(--card);color:var(--muted);display:grid;place-items:center}
+.wpg button svg{width:16px;height:16px}
+.wscroll{overflow-x:auto}
+table.wt{width:100%;border-collapse:collapse;font-size:13.5px;min-width:1180px}
+.wt th{background:var(--primary-soft);color:var(--lab);font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;text-align:start;padding:10px 8px;white-space:nowrap}
+.wt td{padding:10px 8px;border-top:1px solid var(--border);white-space:nowrap;vertical-align:middle}
+.wt tbody tr:hover td{background:var(--bg)}
+.wt .num{font-variant-numeric:tabular-nums}
+.wt .pn b{font-weight:600}.wt .pn small{display:block;color:var(--muted);font-size:12px}
+.wt .wait{font-weight:700;color:var(--orange)}
+.wt .rest{font-weight:600;color:#d9305a}
+.wt tfoot td{background:var(--bg);font-weight:600}
+.wt tfoot td.lab{color:var(--lab);text-align:end}
+.chip{display:inline-block;padding:2px 9px;border-radius:20px;font-size:11.5px;font-weight:600}
+.chip.rdv{background:var(--green-soft);color:var(--green)}
+.chip.sans{background:var(--orange-soft);color:var(--orange)}
+.chip.att{background:var(--purple-soft);color:var(--purple)}
+.chip.act{background:var(--teal-soft);color:var(--teal)}
+.chip.rev{background:var(--primary-soft);color:var(--primary)}
+.chip.ann{background:var(--bg);color:var(--muted)}
+.wempty{padding:36px 20px;text-align:center;color:var(--muted)}
+.wnote{font-size:12px;color:var(--muted);margin:10px 2px 0}
+@media (max-width:1100px){.wstrip{grid-template-columns:repeat(2,minmax(0,1fr))}.wstrip .clock,.wstrip .wadd{grid-column:1/-1}.wfil{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media (max-width:600px){.wres .lsearch{width:100%}.wstrip .wr b{font-size:22px}.wstrip .wr .bub{display:none}}
+
+.wfil[hidden]{display:none}
+.wfil{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:14px 16px}
+.wtools{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.wbtn{height:40px;border:1px solid var(--border);background:var(--card);border-radius:8px;padding:0 14px;display:inline-flex;align-items:center;gap:7px;color:var(--lab);font-weight:600;font:inherit;font-size:14px}
+.wbtn svg{width:16px;height:16px}
+.wbtn.on,.wbtn:hover{border-color:var(--primary);background:var(--primary-soft)}
+table.wt{min-width:760px!important;font-size:14px}
+.wt td{padding:14px 12px!important}.wt th{padding:11px 12px!important}
+.wt .sub{display:block;color:var(--muted);font-size:12px;font-weight:400;margin-top:2px}
+.wt .warn{color:#d9305a;font-weight:600}
+.wt .paid{color:var(--green);font-weight:600}
+.wsum{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));border-top:1px solid var(--border);background:var(--bg)}
+.wsum div{padding:12px 16px;border-inline-start:1px solid var(--border)}
+.wsum div:first-child{border-inline-start:0}
+.wsum small{display:block;font-size:11.5px;color:var(--muted);text-transform:uppercase;letter-spacing:.04em;font-weight:600}
+.wsum b{font-size:16px;font-variant-numeric:tabular-nums}
+.wsum .in b{color:var(--green)}.wsum .out b{color:#d9305a}.wsum .tot b{color:var(--lab)}
+@media (max-width:700px){.wsum{grid-template-columns:repeat(2,minmax(0,1fr))}.wsum div{border-inline-start:0;border-top:1px solid var(--border)}.wsum .tot{grid-column:1/-1}.wtools{width:100%}.wtools .lsearch{flex:1}}
+
+.wr[data-m]{cursor:pointer}
+.wr[data-m]:focus-visible{outline:3px solid var(--text);outline-offset:3px}
+#v-salle[data-m] .wstrip .wr:not(.sel){opacity:.5;filter:saturate(.7)}
+#v-salle[data-m] .wstrip .wr.sel{transform:translateY(-3px);box-shadow:0 0 0 3px var(--bg),0 0 0 5px var(--mc),0 14px 28px -10px var(--glow)}
+#v-salle[data-m=red]{--mc:#e5405e}#v-salle[data-m=green]{--mc:#1fa86f}#v-salle[data-m=orange]{--mc:#f08a32}#v-salle[data-m=violet]{--mc:#7c5ce0}
+#v-salle[data-m] .wres{background:color-mix(in srgb,var(--mc) 13%,var(--card));color:var(--mc)}
+#v-salle[data-m] .wcard{border-top:4px solid var(--mc)}
+#v-salle[data-m] .wch h2{color:var(--mc)}
+#v-salle[data-m] .wt th{background:color-mix(in srgb,var(--mc) 12%,var(--card));color:var(--mc)}
+#v-salle[data-m] .wsum .tot b{color:var(--mc)}
+.wreset{margin-inline-start:10px;border:1px solid currentColor;background:var(--card);color:inherit;border-radius:20px;padding:2px 10px;font:inherit;font-size:12px;font-weight:600}
+.wreset[hidden]{display:none}
+.wt tr.na td{background:color-mix(in srgb,var(--bg) 60%,transparent)}
+.wt tr.na .pn b{font-weight:500}
+
+.wt tr.lock td{background:#efff3a!important;color:#1d2400!important;border-top-color:transparent;cursor:not-allowed;user-select:none}
+.wt tr.lock td *{color:#1d2400!important}
+.wt tr.lock td:first-child{box-shadow:inset 5px 0 0 #b8c800}
+.wt tr.lock .chip{background:rgba(29,36,0,.1)!important}
+.wt tr.lock .sub{opacity:.85}
+.chip.lockc{display:inline-flex;align-items:center;gap:5px}
+.chip.lockc svg{width:13px;height:13px}
+
+.nx{width:min(500px,100%);padding:0 0 14px;text-align:center;overflow:hidden;position:relative}
+.nx-top{position:relative;padding:30px 24px 20px;background:
+  radial-gradient(60% 120% at 0% 0%,color-mix(in srgb,#fcc58f 34%,transparent),transparent 70%),
+  radial-gradient(60% 120% at 100% 0%,color-mix(in srgb,#f3a463 24%,transparent),transparent 70%),
+  radial-gradient(80% 100% at 50% 0%,color-mix(in srgb,#ffe2c4 40%,transparent),transparent 70%)}
+.nx-ok{position:relative;width:66px;height:66px;border-radius:50%;margin:0 auto 14px;display:grid;place-items:center;color:#e8843a;
+  background:linear-gradient(135deg,#fff3e6,#ffe1c2);box-shadow:0 0 0 7px color-mix(in srgb,#fcc58f 16%,transparent),0 0 0 14px color-mix(in srgb,#fcc58f 7%,transparent),0 10px 22px -12px rgba(232,132,58,.45);animation:nxpop .45s cubic-bezier(.2,1.4,.4,1)}
+@keyframes nxpop{from{transform:scale(.4);opacity:0}to{transform:none;opacity:1}}
+.nx-ok>svg{width:30px;height:30px;stroke-width:2}
+.nx-tick{position:absolute;right:-3px;bottom:-3px;width:24px;height:24px;border-radius:50%;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#fcc58f,#f3a463);border:2.5px solid var(--card)}
+.nx-tick svg{width:13px;height:13px;stroke-width:3.2}
+.nx h3{margin:0;font-size:19px;letter-spacing:-.01em}.nx h3 span{background:linear-gradient(90deg,#d9691c,#f08a32 50%,#f5a65b);-webkit-background-clip:text;background-clip:text;color:transparent}
+.nx-top p{margin:6px 0 0;color:var(--muted);font-size:14px}
+.nx-opts{display:flex;flex-direction:column;gap:12px;padding:6px 22px 0}
+.nx-o{display:grid;grid-template-columns:52px minmax(0,1fr) 32px;align-items:center;gap:14px;text-align:start;border-radius:18px;padding:14px 16px;font:inherit;color:var(--text);cursor:pointer;
+  border:1px solid var(--bd);background:linear-gradient(135deg,var(--g1),var(--g2));transition:transform .18s,box-shadow .18s,border-color .18s}
+.nx-o:hover,.nx-o:focus-visible{transform:translateY(-2px);box-shadow:0 14px 30px -14px var(--sh);border-color:var(--ac);outline:0}
+.nx-o .bub{grid-row:1/3;width:52px;height:52px;border-radius:16px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,var(--i1),var(--i2));box-shadow:0 8px 18px -8px var(--sh)}
+.nx-o .bub svg{width:25px;height:25px}
+.nx-o b{font-size:15.5px;color:var(--ac);align-self:end}
+.nx-o small{grid-column:2;font-size:12.8px;color:var(--muted);align-self:start}
+.nx-o::after{content:"";grid-column:3;grid-row:1/3;width:32px;height:32px;border-radius:50%;background:var(--card) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m9 18 6-6-6-6'/%3E%3C/svg%3E") center/16px no-repeat;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.nx-o.violet{--g1:color-mix(in srgb,#ffe4d6 92%,var(--card));--g2:color-mix(in srgb,#fff1ea 92%,var(--card));--bd:color-mix(in srgb,#ec6a3c 32%,transparent);--ac:#c9471c;--i1:#fca07a;--i2:#e85d2f;--sh:rgba(232,93,47,.42)}
+.nx-o.green{--g1:color-mix(in srgb,#fff5cc 92%,var(--card));--g2:color-mix(in srgb,#fffbea 92%,var(--card));--bd:color-mix(in srgb,#eab308 34%,transparent);--ac:#a16207;--i1:#fde68a;--i2:#eab308;--sh:rgba(202,138,4,.4)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .nx-o.violet{--g1:color-mix(in srgb,#e85d2f 22%,var(--card));--g2:color-mix(in srgb,#fca07a 12%,var(--card));--ac:#ffb08f}
+  :root:not([data-theme="light"]) .nx-o.green{--g1:color-mix(in srgb,#eab308 18%,var(--card));--g2:color-mix(in srgb,#fde68a 10%,var(--card));--ac:#fde68a}
+  :root:not([data-theme="light"]) .nx h3 span{background-image:linear-gradient(90deg,#ffc08a,#fdd38a)}}
+:root[data-theme="dark"] .nx-o.violet{--g1:color-mix(in srgb,#e85d2f 22%,var(--card));--g2:color-mix(in srgb,#fca07a 12%,var(--card));--ac:#ffb08f}
+:root[data-theme="dark"] .nx-o.green{--g1:color-mix(in srgb,#eab308 18%,var(--card));--g2:color-mix(in srgb,#fde68a 10%,var(--card));--ac:#fde68a}
+.nx-later{margin-top:10px;border:0;background:none;color:var(--muted);font:inherit;font-size:14px;padding:8px 18px;border-radius:20px}
+.nx-later:hover{background:var(--bg);color:var(--text)}
+
+.nx .nx-ok{width:60px;height:60px;margin:0 auto 16px;box-shadow:0 0 0 8px color-mix(in srgb,#fcc58f 13%,transparent),0 8px 18px -10px rgba(232,132,58,.45)}
+.nx .nx-ok>svg{width:27px;height:27px}
+.nx-top{padding:30px 24px 22px}
+.nx h3{font-size:18.5px;line-height:1.3}
+.nx-top p{margin:6px 0 0;font-size:14px}
+.nx-saved{display:inline-flex;align-items:center;gap:4px;color:#d9691c;font-weight:600}
+.nx-saved svg{width:14px;height:14px;stroke-width:3}
+.wt .tsoin{display:flex;align-items:center;gap:4px;margin-top:5px;font-variant-numeric:tabular-nums}.wt .tsoin svg{width:13px;height:13px}.wt .tsoin .wait{font-size:13px}
+.chip.carc{background:#fde7ea;color:#c42645;white-space:nowrap}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .chip.carc{background:#3a1820;color:#ff8fa3}}
+:root[data-theme="dark"] .chip.carc{background:#3a1820;color:#ff8fa3}
+.wt td .chip{margin-inline-start:-9px}.wt td .tsoin{margin-inline-start:0}
+.wstrip .wadd{display:flex;align-items:center;gap:14px;padding:14px 18px;text-align:start;min-height:84px;font:inherit;color:var(--text)}
+.wstrip .wadd .ic{margin:0;flex:none}
+.wstrip .wadd .tx{position:relative;z-index:1;min-width:0}
+.wstrip .wadd .ghost{width:96px;height:96px}
+.wstrip .wr.wclock{justify-content:center;padding:10px}
+.wstrip .wr .wclk{position:relative;z-index:1;font-size:clamp(28px,2.9vw,40px);font-weight:800;color:#fff;font-variant-numeric:tabular-nums;letter-spacing:.03em;white-space:nowrap;text-shadow:0 2px 6px rgba(40,10,90,.45)}
+@media (max-width:1100px){.wstrip .wr .wclk{font-size:30px}}
+.wstrip .wclkb{position:relative;z-index:1;text-align:center;line-height:1.1}
+.wstrip .wday{color:#fff;font-size:12.5px;font-weight:600;text-transform:capitalize;margin-top:4px;white-space:nowrap;text-shadow:0 1px 3px rgba(40,10,90,.4)}
+.wstrip .wr .wclk{font-size:clamp(28px,2.6vw,36px)!important}
+.wlbl{display:inline-flex;align-items:center;gap:10px;flex-wrap:wrap;font-size:17px;font-weight:700;color:var(--lab)}
+.wlbl-ic{width:38px;height:38px;border-radius:11px;display:grid;place-items:center;color:#fff;background:linear-gradient(135deg,#3cc7b5,#16a39b 55%,#0f7f78);box-shadow:0 6px 14px -8px rgba(15,127,120,.6)}
+.wlbl-ic svg{width:20px;height:20px}
+.wcnt{min-width:30px;height:28px;padding:0 9px;border-radius:20px;display:inline-grid;place-items:center;font-size:15px;font-weight:800;color:#fff;background:#16a39b;font-variant-numeric:tabular-nums}
+#v-salle[data-m] .wlbl{color:var(--mc)}
+#v-salle[data-m] .wlbl-ic,#v-salle[data-m] .wcnt{background:var(--mc);box-shadow:none}
+.wres{padding-block:10px}
+
+.ptabs{display:flex;gap:4px;flex-wrap:wrap;border-bottom:1px solid var(--border);margin:-4px 0 16px}
+.ptabs button{display:inline-flex;align-items:center;gap:7px;border:0;background:none;font:inherit;font-size:13.5px;font-weight:600;color:var(--muted);padding:10px 12px;border-bottom:2.5px solid transparent;margin-bottom:-1px;border-radius:8px 8px 0 0}
+.ptabs button svg{width:16px;height:16px}
+.ptabs button:hover{color:var(--lab);background:var(--primary-soft)}
+.ptabs button.on{color:var(--lab);border-bottom-color:var(--primary)}
+#pt-more[hidden],#pt-info[hidden]{display:none}
+.inp.tarea{height:auto;min-height:90px;padding:10px 12px;resize:vertical;line-height:1.45}
+.g12 .c6{grid-column:span 6}
+@media (max-width:600px){.g12 .c6{grid-column:span 12}}
+
+/* ===== Dossier administratif : champs (refonte) ===== */
+#v-dossier-patient .dbody .g12{gap:16px 18px}
+#v-dossier-patient .dbody .g12>div{display:flex;flex-direction:column-reverse;justify-content:flex-end;gap:7px;min-width:0}
+#v-dossier-patient .dbody .fl{margin:0;font-size:12.5px;font-weight:600;color:var(--lab);letter-spacing:.01em;display:flex;align-items:center;gap:3px}
+#v-dossier-patient .dbody .fl em{color:#e5484d;font-style:normal}
+#v-dossier-patient .dbody .inp{height:44px;border:1px solid var(--border);border-radius:11px;padding:0 14px;font-size:14.5px;
+  background:color-mix(in srgb,var(--primary) 3%,var(--card));transition:border-color .15s,box-shadow .15s,background .15s}
+#v-dossier-patient .dbody .inp:hover{border-color:color-mix(in srgb,var(--primary) 40%,var(--border))}
+#v-dossier-patient .dbody .inp:focus{border-color:var(--primary);background:var(--card);box-shadow:0 0 0 3px var(--primary-soft)}
+#v-dossier-patient .dbody .inp::placeholder{color:var(--muted);opacity:.55}
+#v-dossier-patient .dbody .inp:disabled,#v-dossier-patient .dbody .inp[readonly]{background:var(--bg);color:var(--muted);cursor:not-allowed}
+#v-dossier-patient .dbody .inp.bad{border-color:#e5484d;box-shadow:0 0 0 3px rgba(229,72,77,.12)}
+#v-dossier-patient .dbody textarea.inp{height:auto;padding:12px 14px}
+#v-dossier-patient .dbody .tel .inp:first-child{width:104px;padding:0 8px 0 12px}
+#v-dossier-patient .dbody .tags{min-height:48px;border:1px solid var(--border);border-radius:11px;background:color-mix(in srgb,var(--primary) 3%,var(--card))}
+#v-dossier-patient .dbody .tags:focus-within{border-color:var(--primary);box-shadow:0 0 0 3px var(--primary-soft);background:var(--card)}
+#v-dossier-patient .dbody .sect{display:flex;align-items:center;gap:10px;margin:28px 0 14px}
+#v-dossier-patient .dbody .sect::before{content:"";width:4px;height:14px;border-radius:3px;background:var(--primary)}
+#v-dossier-patient .dbody .sect::after{content:"";flex:1;height:1px;background:var(--border)}
+#v-dossier-patient .dbody #pt-more>.sect:first-child{margin-top:4px}
+#v-dossier-patient .dbody .g12>div.rem{flex-direction:column}
+#v-dossier-patient .dbody .rem .fl{font-weight:500;font-size:12px;color:var(--muted)}
+#v-dossier-patient .nid{border:1px solid var(--border);border-radius:14px;padding:14px 16px 16px;background:color-mix(in srgb,var(--primary) 2%,var(--card))}
+.nid-sub{margin:0 0 12px;font-size:12.5px;color:var(--muted)}
+.nid-sw{display:inline-flex;align-items:center;gap:10px;margin-top:14px;font-size:13.5px;font-weight:600;color:var(--lab);cursor:pointer;user-select:none}
+.nid-sw input{position:absolute;opacity:0;pointer-events:none}
+.nid-sw .sw{width:38px;height:22px;border-radius:20px;background:var(--border);position:relative;transition:background .15s;flex:none}
+.nid-sw .sw::after{content:"";position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.2);transition:transform .15s}
+.nid-sw input:checked+.sw{background:var(--primary)}
+.nid-sw input:checked+.sw::after{transform:translateX(16px)}
+.nid-sw input:focus-visible+.sw{outline:2px solid var(--primary);outline-offset:2px}
+.nid-g{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:12px}
+.nid-g[hidden]{display:none}
+.nid-card small{display:block;font-size:12.5px;font-weight:600;color:var(--lab);margin-bottom:6px}
+.nid-drop{position:relative;min-height:160px;border:1.5px dashed color-mix(in srgb,var(--primary) 35%,var(--border));border-radius:12px;background:var(--bg);display:grid;place-items:center;overflow:hidden}
+.nid-drop img{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:var(--card)}
+.nid-drop.has .nid-up{position:absolute;bottom:8px;right:8px;flex-direction:row}
+.nid-up{position:relative;z-index:1;display:flex;flex-direction:column;gap:7px}
+.nid-btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;height:32px;padding:0 14px;border:1px solid var(--border);border-radius:8px;background:var(--card);font-size:12.5px;font-weight:600;color:var(--text);cursor:pointer}
+.nid-btn:hover{border-color:var(--primary);color:var(--lab)}
+.nid-btn svg{width:14px;height:14px}
+@media (max-width:600px){.nid-g{grid-template-columns:1fr}}
+
+/* ===== version en ligne ===== */
+.ddchip[data-s=on]{background:rgba(255,255,255,.2)}
+.ddchip[data-s=off],.ddchip[data-s=err]{background:#fde7ea;color:#b4233f}
+.ddchip[data-s=slow],.ddchip[data-s=load]{background:rgba(255,255,255,.12);opacity:.9}
+[data-role-open]{cursor:pointer;border-radius:10px}
+[data-role-open]:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.wt .wact{text-align:end;white-space:nowrap}
+.wbtn-s{display:inline-flex;align-items:center;gap:5px;height:32px;padding:0 12px;border-radius:8px;border:1px solid var(--border);background:var(--card);font:inherit;font-size:12.5px;font-weight:700;color:var(--text);cursor:pointer}
+.wbtn-s svg{width:14px;height:14px}
+.wbtn-s.go{background:var(--primary);border-color:var(--primary);color:#fff}
+.wbtn-s.end{background:#1d2400;border-color:#1d2400;color:#efff3a!important}
+.wbtn-s.x{width:32px;padding:0;justify-content:center;color:var(--muted)}
+.wbtn-s.x:hover{color:#d9305a;border-color:#d9305a}
+.wbtn-s:disabled{opacity:.5;cursor:wait}
+.wt tr.done td{color:var(--muted)}
+.wt tr.done .pn b{font-weight:500}
+.chip.fin{background:var(--green-soft);color:var(--green)}
+.fwait{border:1px solid var(--border);background:var(--card);color:var(--lab);font-weight:600;gap:7px;display:inline-flex;align-items:center}
+.fwait svg{width:17px;height:17px}
+@media (max-width:760px){.fwait span{display:none}}
+.wv{width:min(460px,100%)}
+.rolem{width:min(520px,100%);padding:26px 22px 22px;text-align:center}
+.role-top h3{margin:0;font-size:19px}.role-top p{margin:6px 0 18px;color:var(--muted);font-size:13.5px}
+.role-opts{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.role-o{border:1px solid var(--border);border-radius:16px;background:var(--card);padding:18px 14px;display:flex;flex-direction:column;align-items:center;gap:6px;font:inherit;color:var(--text);cursor:pointer;transition:transform .15s,border-color .15s,box-shadow .15s}
+.role-o:hover,.role-o:focus-visible{transform:translateY(-2px);border-color:var(--primary);box-shadow:0 12px 26px -14px rgba(16,24,40,.35);outline:0}
+.role-o .bub{width:50px;height:50px;border-radius:15px;display:grid;place-items:center;color:#fff}
+.role-o .bub svg{width:25px;height:25px}
+.role-o.doc .bub{background:linear-gradient(135deg,#6eb6ff,#2f6fde)}
+.role-o.rec .bub{background:linear-gradient(135deg,#fcc58f,#ee7d2c)}
+.role-o b{font-size:16px}.role-o small{font-size:12.5px;color:var(--muted)}
+@media (max-width:440px){.role-opts{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.nx-ok{animation:none}.nx-o{transition:none}}
+
+/* ===== Modal Nouveau patient (Uli) ===== */
+.ov{position:fixed;inset:0;z-index:60;background:rgba(15,23,42,.45);display:grid;place-items:center;padding:16px;padding-top:calc(16px + env(safe-area-inset-top,0px));padding-bottom:calc(16px + env(safe-area-inset-bottom,0px))}
+.ov[hidden]{display:none}
+.md{width:min(560px,100%);max-height:100%;overflow:auto;background:var(--card);border-radius:18px;box-shadow:0 24px 60px rgba(15,23,42,.25);display:flex;flex-direction:column}
+.md header{display:flex;align-items:center;justify-content:space-between;padding:18px 22px;border-bottom:1px solid var(--border);position:sticky;top:0;background:var(--card);z-index:1}
+.md h3{margin:0;font-size:18px}
+.md .x{width:34px;height:34px;border-radius:9px;border:0;background:var(--bg);display:grid;place-items:center;color:var(--muted)}
+.md .mb{padding:18px 22px;display:flex;flex-direction:column;gap:14px}
+.md footer{display:flex;gap:10px;justify-content:flex-end;padding:14px 22px;border-top:1px solid var(--border);position:sticky;bottom:0;background:var(--card)}
+.mf label{display:block;font-size:13px;font-weight:600;margin-bottom:6px}
+.mf label em{color:#e5484d;font-style:normal}
+.mf .inp{height:42px}
+.two{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.three{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.pick{display:inline-flex;gap:4px;background:var(--bg);padding:4px;border-radius:10px}
+.pick button{border:0;background:none;padding:8px 16px;border-radius:8px;font-weight:500;color:var(--muted)}
+.pick button.on{background:var(--card);color:var(--primary);box-shadow:0 1px 3px rgba(16,24,40,.1)}
+.addf{align-self:flex-start;border:1px dashed var(--border);background:none;border-radius:10px;padding:8px 14px;display:inline-flex;align-items:center;gap:8px;color:var(--primary);font-weight:600;font-size:14px}
+.addf:hover{border-color:var(--primary);background:var(--primary-soft)}
+.addf svg{width:16px;height:16px}
+.adm{display:flex;flex-direction:column;gap:14px;border-top:1px solid var(--border);padding-top:14px}
+.adm[hidden]{display:none}
+.admh{display:flex;justify-content:space-between;align-items:center;font-size:12px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.admh button{border:0;background:none;color:var(--primary);font-weight:600;text-transform:none;letter-spacing:0;font-size:13px}
+.agew{position:relative}.agew span{position:absolute;right:12px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:14px;pointer-events:none}.agew .inp{padding-right:44px}
+.inp[readonly]{background:var(--bg)}
+.md header.nph{position:sticky;overflow:hidden;justify-content:flex-start;gap:14px;padding:20px 22px;background:linear-gradient(135deg,var(--orange-soft) 0%,var(--card) 70%);border-bottom:1px solid var(--border)}
+.nph-ic{position:relative;z-index:1;width:48px;height:48px;border-radius:10px;background:var(--card);color:var(--orange);display:grid;place-items:center;box-shadow:0 2px 8px rgba(240,140,46,.18);flex:none}
+.nph-ic svg{width:22px;height:22px}
+.nph-t{position:relative;z-index:1;flex:1;min-width:0}
+.nph-t h3{font-size:18px;font-weight:600}
+.nph-t small{color:var(--muted);font-size:13px}
+.md svg.nph-ghost{position:absolute;right:56px;bottom:-30px;width:110px;height:110px;color:var(--orange);opacity:.09;stroke-width:1.2;pointer-events:none}
+.md header.nph .x{position:relative;z-index:1;background:var(--card)}
+.md .mf label{color:var(--text)}
+.md .inp:hover{border-color:#cfd7e3}
+.md .addf{width:100%;justify-content:center;border:0;background:var(--bg);color:var(--muted);font-weight:500;padding:10px 14px}.md .addf svg{color:var(--orange)}.md .addf:hover{background:var(--orange-soft);color:var(--orange)}
+#np-form .btn.pri{background:linear-gradient(135deg,#f9c08a,#f3a463);box-shadow:0 4px 12px -6px rgba(240,140,46,.45)}
+#np-form .inp:focus{border-color:var(--orange);box-shadow:0 0 0 3px var(--orange-soft)}
+.md .admh{color:var(--muted)}
+.inp::placeholder,.lsearch input::placeholder{color:var(--muted);opacity:.5}
+.inp.ph{color:color-mix(in srgb,var(--muted) 60%,transparent)}
+.inp.ph option{color:var(--text)}
+.addf[hidden]{display:none}
+.md .admh button{color:var(--orange)}
+.admg{margin:6px 0 -4px;font-size:12.5px;font-weight:700;color:var(--orange);display:flex;align-items:center;gap:8px}.admg::after{content:"";flex:1;height:1px;background:var(--border)}
+.btn.ghost{background:var(--card);border:1px solid var(--border);color:var(--text)}
+@media (max-width:520px){.two,.three{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){.sidebar,.qa,.wr{transition:none}}
+
+.loginm{max-width:420px;width:calc(100% - 32px)}
+.loginm footer{justify-content:stretch}.loginm footer .btn{flex:1}
+.lg-err{margin:4px 0 0;color:#c62828;font-size:13px;font-weight:600}
+.role-foot{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:12px 22px 18px;color:var(--muted);font-size:12.5px}
+.role-foot:empty{display:none}
+
+.pinm .role-top{text-align:center;padding-top:26px}
+.pin-ic{display:inline-grid;place-items:center;width:52px;height:52px;border-radius:16px;background:linear-gradient(135deg,#3b82f6,#2f6fde);color:#fff;margin-bottom:8px}
+.pin-ic svg{width:26px;height:26px}
+.pin-in{text-align:center;font-size:22px;letter-spacing:.5em;font-weight:700}
+</style>
+</head><body>
+
+<aside id="side" class="sidebar" aria-label="Menu">
+  <div class="brand">
+    <div class="mark"><img alt="Logo Clinique El Itkane" src="data:image/png;base64,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"></div>
+    <div><b>itkan</b><small>Cabinet dentaire</small></div>
+  </div>
+  <nav>
+    <a class="on" href="#" aria-current="page"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/></svg>Tableau de bord</a>
+  </nav>
+  <div class="side-note">Les autres rubriques apparaîtront ici au fur et à mesure.</div>
+</aside>
+<div class="scrim" id="scrim"></div>
+
+<main>
+  <header class="ddtop">
+    <a class="ddbrand" href="#"><i><svg class="i" viewBox="0 0 24 24"><path d="M7.5 3.5c-2.5 0-4 2-4 4.6 0 2.4 1 4 1.6 6.2.6 2.3.9 6.2 2.6 6.2 1.6 0 1.6-4.8 4.3-4.8s2.7 4.8 4.3 4.8c1.7 0 2-3.9 2.6-6.2.6-2.2 1.6-3.8 1.6-6.2 0-2.6-1.5-4.6-4-4.6-1.9 0-2.9 1.2-4.5 1.2S9.4 3.5 7.5 3.5z"/></svg></i>itkan</a>
+    <a class="ddic home" href="#" aria-label="Accueil"><svg class="i" viewBox="0 0 24 24"><path d="M3 10.5 12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6h-6v6H4a1 1 0 0 1-1-1z"/></svg></a>
+    <button class="ddic" type="button" aria-label="Tâches"><svg class="i" viewBox="0 0 24 24"><path d="M3 5h2l1 1 2-2M3 12h2l1 1 2-2M3 19h2l1 1 2-2M11 5h10M11 12h10M11 19h10"/></svg><sup>0</sup></button>
+    <button class="ddic" type="button" aria-label="Messages"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="m3 7 9 6 9-6"/></svg><sup>0</sup></button>
+    <button class="ddic" type="button" aria-label="Site web"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a14 14 0 0 1 0 18M12 3a14 14 0 0 0 0 18"/></svg></button>
+    <button class="ddic" type="button" aria-label="Paramètres"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M2 12h3M19 12h3M4.9 19.1 7 17M17 7l2.1-2.1"/></svg></button>
+    <span class="ddchip" id="sync-chip" data-s="load"><svg class="i" viewBox="0 0 24 24"><path d="M17.5 19H7a5 5 0 1 1 .9-9.9A6 6 0 0 1 19.5 11 4 4 0 0 1 17.5 19z"/></svg><span>Connexion…</span></span>
+    <span class="ddsp"></span>
+    <label class="ddsearch"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="dd-q" placeholder="Recherche patient" aria-label="Recherche patient"></label>
+    <button class="ddic" type="button" id="dd-fs" aria-label="Plein écran"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <div class="ddme" data-role-open role="button" tabindex="0" title="Changer de poste"><span class="av role-av">DM</span><div class="who"><b class="role-name">Dr Mokhtar</b><small class="role-lbl">Médecin</small></div></div>
+  </header>
+  <header class="top">
+    <button class="ibtn burger" id="burger" aria-label="Ouvrir le menu"><svg class="i" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></svg></button>
+    <span class="crumb" id="crumb">Tableau de bord</span>
+    <span class="sp"></span>
+    <button class="ibtn" id="fs" aria-label="Plein écran"><svg class="i" viewBox="0 0 24 24"><path d="M4 9V4h5M20 9V4h-5M4 15v5h5M20 15v5h-5"/></svg></button>
+    <div class="avatar" data-role-open role="button" tabindex="0" title="Changer de poste"><div class="ph role-av">DM</div><div class="who"><b class="role-name">Dr Mokhtar</b><small class="role-lbl">Médecin</small></div></div>
+  </header>
+
+  <div class="content">
+   <div class="view" id="v-dashboard">
+    <h1 class="page-title">Tableau de bord</h1>
+    <p class="page-sub">Vue d’ensemble du cabinet en un coup d’œil</p>
+    <div class="layout">
+      <section>
+        <form class="psearch" id="psearch" role="search">
+          <span class="ps-ic"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg></span>
+          <input id="ps-q" type="search" placeholder="Rechercher un patient" aria-label="Rechercher un patient" autocomplete="off">
+          <button type="submit" class="ps-go" aria-label="Lancer la recherche"><svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+        </form>
+        <h2 class="section-title">Actions rapides</h2>
+        <p class="section-sub">Accédez directement à ce dont vous avez besoin</p>
+        <div class="grid">
+          <button class="qa tone-orange" id="qa-add">
+            <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></div>
+            <b>Ajouter un patient</b><span>Créer un nouveau dossier</span>
+            <svg class="i ghost" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+          </button>
+          <button class="qa tone-pink" id="qa-files">
+            <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg></div>
+            <b>Dossiers patients</b><span>Consulter les dossiers</span>
+            <svg class="i ghost" viewBox="0 0 24 24"><path d="m6 14 1.5-2.9A2 2 0 0 1 9.24 10H20a2 2 0 0 1 1.94 2.5l-1.54 6a2 2 0 0 1-1.95 1.5H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h3.9a2 2 0 0 1 1.69.9l.81 1.2a2 2 0 0 0 1.67.9H18a2 2 0 0 1 2 2v2"/></svg>
+          </button>
+          <button class="qa tone-purple" id="qa-room">
+            <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2M19 18v2"/></svg></div>
+            <b>Salle d’attente</b><span>Arrivées des patients</span>
+            <svg class="i ghost" viewBox="0 0 24 24"><path d="M19 9V6a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v3"/><path d="M3 16a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-5a2 2 0 0 0-4 0v1.5a.5.5 0 0 1-.5.5h-9a.5.5 0 0 1-.5-.5V11a2 2 0 0 0-4 0z"/><path d="M5 18v2M19 18v2"/></svg>
+          </button>
+          <button class="qa tone-teal" id="qa-rdv">
+            <div class="ic"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M12 14v5M9.5 16.5h5"/></svg></div>
+            <b>Ajouter un rendez-vous</b><span>Planifier une visite</span>
+            <svg class="i ghost" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M12 14v5M9.5 16.5h5"/></svg>
+          </button>
+          <button class="qa tone-green" id="qa-agenda">
+            <div class="ic"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg></div>
+            <b>Agenda</b><span>Voir les rendez-vous</span>
+            <svg class="i ghost" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8 14h.01M12 14h.01M16 14h.01M8 18h.01M12 18h.01M16 18h.01"/></svg>
+          </button>
+        </div>
+        <p class="hint" id="hint" hidden><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v5M12 16h.01"/></svg><span id="hint-t"></span></p>
+      </section>
+
+      <aside class="rail" aria-label="Salle d’attente">
+        <div class="clock">
+          <div class="d"><b id="c-date" data-c="date">--/--/----</b><small id="c-day" data-c="day"></small></div>
+          <div class="t" id="c-time" data-c="time">--:--:--</div>
+        </div>
+        <div class="wr red" data-m="red" role="button" tabindex="0">
+          <div class="bub"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8.5 15.5l2.2 2.2 4.8-4.8"/></svg></div>
+          <div class="tx"><b>3 <small>/ 8</small></b><span>Rendez-vous du jour</span></div>
+        </div>
+        <div class="wr green" data-m="green" role="button" tabindex="0">
+          <div class="bub"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2M16 11l2 2 4-4"/></svg></div>
+          <div class="tx"><b>2</b><span>En attente avec RDV</span></div>
+        </div>
+        <div class="wr orange" data-m="orange" role="button" tabindex="0">
+          <div class="bub"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h4"/><circle cx="17.5" cy="16.5" r="4.5"/><path d="M17.5 14.5v2l1.3 1"/></svg></div>
+          <div class="tx"><b>1</b><span>En attente sans RDV</span></div>
+        </div>
+        <div class="wr violet" data-m="violet" role="button" tabindex="0">
+          <div class="bub"><svg class="i" viewBox="0 0 24 24"><path d="M6 11V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4M4 13a2 2 0 0 1 4 0v2h8v-2a2 2 0 0 1 4 0v5H4zM6 18v2M18 18v2"/></svg></div>
+          <div class="tx"><b>3</b><span>Total en attente</span></div>
+        </div>
+        <p class="sample">Mis à jour en direct depuis la salle d’attente</p>
+      </aside>
+    </div>
+   </div>
+
+   <div class="view" id="v-dossiers" hidden>
+    <div class="fbar">
+      <button type="button" class="btn pri" id="l-new"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>Nouveau patient</button>
+      <a class="back" href="#" aria-label="Retour au tableau de bord"><svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
+      <h1>Dossiers patients</h1>
+    </div>
+    <div class="lwrap">
+      <div class="lhead">
+        <label class="lsearch"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="l-q" type="search" placeholder="Nom, prénom ou téléphone…" aria-label="Rechercher dans les dossiers" autocomplete="off"></label>
+        <span id="l-count">0 patient(s)</span>
+      </div>
+      <div id="l-list"></div>
+    </div>
+   </div>
+
+   <div class="view" id="v-salle" hidden>
+    <div class="fbar">
+      <a class="back" href="#" aria-label="Retour au tableau de bord"><svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
+      <h1>Salle d’attente</h1>
+    </div>
+    <div class="lwrap">
+      <div class="wstrip" aria-label="Résumé de la salle d’attente">
+        <button type="button" class="qa tone-orange wadd" id="w-add">
+          <div class="ic"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></div>
+          <div class="tx"><b>Ajouter un patient</b><span>Créer un nouveau dossier</span></div>
+          <svg class="i ghost" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>
+        </button>
+        <div class="wr red" data-m="red" role="button" tabindex="0">
+          <div class="bub"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M8.5 15.5l2.2 2.2 4.8-4.8"/></svg></div>
+          <div class="tx"><b>3 <small>/ 8</small></b><span>Rendez-vous du jour</span></div>
+        </div>
+        <div class="wr green" data-m="green" role="button" tabindex="0">
+          <div class="bub"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v2M16 11l2 2 4-4"/></svg></div>
+          <div class="tx"><b>2</b><span>En attente avec RDV</span></div>
+        </div>
+        <div class="wr orange" data-m="orange" role="button" tabindex="0">
+          <div class="bub"><svg class="i" viewBox="0 0 24 24"><circle cx="9" cy="7" r="4"/><path d="M2 21v-2a4 4 0 0 1 4-4h4"/><circle cx="17.5" cy="16.5" r="4.5"/><path d="M17.5 14.5v2l1.3 1"/></svg></div>
+          <div class="tx"><b>1</b><span>En attente sans RDV</span></div>
+        </div>
+        <div class="wr violet wclock" data-m="violet" role="button" tabindex="0">
+          <div class="wclkb"><div class="wclk" data-c="hm">--:--</div><div class="wday" data-c="dayfull"></div></div>
+        </div>
+      </div>
+
+      <div class="wres">
+        <span class="wlbl"><span class="wlbl-ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 11V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4M4 13a2 2 0 0 1 4 0v2h8v-2a2 2 0 0 1 4 0v5H4zM6 18v2M18 18v2"/></svg></span><span id="w-lbl">Patients en salle d’attente</span><b id="w-count" class="wcnt">0</b><button type="button" class="wreset" id="w-reset" hidden>× Afficher tout</button></span>
+        <div class="wtools"><button type="button" class="wbtn" id="w-ftog" aria-expanded="false"><svg class="i" viewBox="0 0 24 24"><path d="M3 5h18l-7 8v6l-4 2v-8z"/></svg>Filtres</button><label class="lsearch"><svg class="i" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="w-q" type="search" placeholder="Recherche rapide (N°, Nom, Prénom…)" aria-label="Recherche rapide" autocomplete="off"></label></div>
+      </div>
+      <div class="wfil" id="w-fil" hidden>
+        <div><label class="fl" for="w-num">N° patient</label><input class="inp" id="w-num" inputmode="numeric" autocomplete="off"></div>
+        <div><label class="fl" for="w-nom">Nom</label><input class="inp" id="w-nom" autocomplete="off"></div>
+        <div><label class="fl" for="w-prenom">Prénom</label><input class="inp" id="w-prenom" autocomplete="off"></div>
+        <div><label class="fl" for="w-med">Médecin</label><select class="inp" id="w-med"><option value="">Tous les médecins</option><option>Dr Mokhtar</option></select></div>
+        <div><label class="fl" for="w-du">Du</label><input class="inp" type="date" id="w-du"></div>
+        <div><label class="fl" for="w-au">Au</label><input class="inp" type="date" id="w-au"></div>
+        <div><label class="fl" for="w-etat">État</label><select class="inp" id="w-etat"><option value="">Tous les états</option><option>En attente</option><option value="Actif">En soins</option><option>Terminé</option><option>Annulé</option></select></div>
+        <div><label class="fl" for="w-mode">Mode de paiement</label><select class="inp" id="w-mode"><option value="">Tous les modes</option><option>Espèces</option><option>Convention</option><option>Chèque</option><option>CIB</option><option>Virement</option><option>Banque de crédit</option></select></div>
+      </div>
+
+
+      <div class="card wcard">
+        <div class="wch">
+          <h2><svg class="i" viewBox="0 0 24 24"><path d="M6 11V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4M4 13a2 2 0 0 1 4 0v2h8v-2a2 2 0 0 1 4 0v5H4zM6 18v2M18 18v2"/></svg><span id="w-title">Consultations</span></h2>
+          <span class="lmuted" id="w-aff">Affichage 0-0 sur 0</span>
+          <span class="sp"></span>
+          <select class="inp" id="w-ps" aria-label="Lignes par page"><option>25</option><option>50</option><option>100</option></select>
+          <div class="wpg"><button type="button" aria-label="Page précédente" disabled><svg class="i" viewBox="0 0 24 24"><path d="m15 18-6-6 6-6"/></svg></button><button type="button" aria-label="Page suivante" disabled><svg class="i" viewBox="0 0 24 24"><path d="m9 18 6-6-6-6"/></svg></button></div>
+        </div>
+        <div class="wscroll">
+          <table class="wt">
+            <thead><tr><th>#</th><th>Patient</th><th>Caractéristique</th><th>RDV</th><th>Arrivée</th><th>Attente</th><th>Motif</th><th>Reste à payer</th><th>État</th><th class="wact-h"><span class="sr">Actions</span></th></tr></thead>
+            <tbody id="w-body"></tbody>
+          </table>
+        </div>
+        <div class="wsum" id="w-foot"></div>
+      </div>
+      <p class="wnote">Liste du jour, partagée en direct entre le médecin et la réception.</p>
+    </div>
+   </div>
+
+   <div class="view" id="v-dossier-patient" hidden>
+    <form id="pform" novalidate>
+    <div class="fbar">
+      <button type="submit" class="btn pri"><svg class="i" viewBox="0 0 24 24"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><path d="M17 21v-8H7v8M7 3v5h8"/></svg>Enregistrer</button>
+      <button type="button" class="btn ghost fwait" id="f-wait"><svg class="i" viewBox="0 0 24 24"><path d="M6 11V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4M4 13a2 2 0 0 1 4 0v2h8v-2a2 2 0 0 1 4 0v5H4zM6 18v2M18 18v2"/></svg><span>Envoyer en salle d’attente</span></button>
+      <a class="back" href="#dossiers" aria-label="Retour aux dossiers patients"><svg class="i" viewBox="0 0 24 24"><path d="M19 12H5M12 19l-7-7 7-7"/></svg></a>
+      <h1 id="f-title">Dossier patient</h1>
+    </div>
+    <div class="fgrid">
+      <div class="fcol">
+        <div class="card pad">
+          <p class="ctitle">Banque de crédit</p>
+          <div class="credit">
+            <input class="inp" id="p-credit" type="number" step="100" value="0" inputmode="numeric" aria-label="Banque de crédit (DA)">
+            <button type="button" class="sq" id="cr-plus" aria-label="Ajouter 100 DA">+</button>
+            <button type="button" class="sq" id="cr-minus" aria-label="Retirer 100 DA">−</button>
+          </div>
+          <div class="conv">
+            <label class="chk"><input type="checkbox" id="p-conv">Patient converti</label>
+            <div><input class="inp" type="date" id="p-convdate" disabled><span class="fl">Date de conversion</span></div>
+          </div>
+        </div>
+        <div class="card pad">
+          <div class="photo" id="photo"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg></div>
+          <input type="file" id="p-photo" accept="image/*" hidden>
+          <button type="button" class="btn pri wide" id="photo-btn"><svg class="i" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>Télécharger une photo</button>
+          <div class="tiles">
+            <div class="tile" style="color:var(--green)"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M9 15l2 2 4-4"/></svg>Consult.<b>0</b></div>
+            <div class="tile" style="color:#e5484d"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M10 14l4 4M14 14l-4 4"/></svg>Absences<b>0</b></div>
+            <div class="tile" style="color:var(--orange)"><svg class="i" viewBox="0 0 24 24"><path d="m12 3 2.8 5.7 6.2.9-4.5 4.4 1 6.2-5.5-2.9-5.5 2.9 1-6.2L3 9.6l6.2-.9z"/></svg>Évaluation<b>—</b></div>
+          </div>
+          <input class="inp" id="p-chifa" inputmode="numeric"><span class="fl">Carte Chifa (N° assuré social)</span>
+          <div style="margin-top:14px"><select class="inp" id="p-conv-org"><option>Aucune</option></select><span class="fl">Convention</span></div>
+        </div>
+      </div>
+
+      <div class="card">
+        <div class="dhead">Dossier administratif</div>
+        <div class="dbody">
+          <div class="ptabs" role="tablist">
+            <button type="button" role="tab" class="on" data-ptab="info" aria-selected="true"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>Renseignements sur la personne</button>
+            <button type="button" role="tab" data-ptab="more" aria-selected="false"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 8v8M8 12h8"/></svg>Informations complémentaires</button>
+          </div>
+          <div id="pt-info">
+          <div class="g12">
+            <div class="c4"><input class="inp req" id="p-nom" autocomplete="off"><span class="fl">Nom <em>*</em></span></div>
+            <div class="c4"><input class="inp req" id="p-prenom" autocomplete="off"><span class="fl">Prénom <em>*</em></span></div>
+            <div class="c4"><div class="tel"><select class="inp" id="p-cc"><option>DZ +213</option><option>MA +212</option><option>TN +216</option><option>FR +33</option><option>ES +34</option><option>AE +971</option><option>SA +966</option></select><input class="inp" type="tel" id="p-tel" placeholder="0770 00 00 00"></div><span class="fl">Téléphone</span></div>
+            <div class="c4"><select class="inp" id="p-sexe"><option value="">Choisir…</option><option>Masculin</option><option>Féminin</option></select><span class="fl">Genre</span></div>
+            <div class="c4"><input class="inp" type="date" id="p-dob"><span class="fl">Date de naissance</span></div>
+            <div class="c4"><div class="agew"><input class="inp" id="p-age" inputmode="numeric" maxlength="3"><span>ans</span></div><span class="fl">Âge</span></div>
+          </div>
+
+          <p class="sect">Adresse</p>
+          <div class="g12">
+            <div class="c6"><select class="inp" id="p-wil"><option value="">Wilaya</option><option>01 - Adrar</option><option>02 - Chlef</option><option>03 - Laghouat</option><option>04 - Oum El Bouaghi</option><option>05 - Batna</option><option>06 - Béjaïa</option><option>07 - Biskra</option><option>08 - Béchar</option><option>09 - Blida</option><option>10 - Bouira</option><option>11 - Tamanrasset</option><option>12 - Tébessa</option><option>13 - Tlemcen</option><option>14 - Tiaret</option><option>15 - Tizi Ouzou</option><option>16 - Alger</option><option>17 - Djelfa</option><option>18 - Jijel</option><option>19 - Sétif</option><option>20 - Saïda</option><option>21 - Skikda</option><option>22 - Sidi Bel Abbès</option><option>23 - Annaba</option><option>24 - Guelma</option><option>25 - Constantine</option><option>26 - Médéa</option><option>27 - Mostaganem</option><option>28 - M'Sila</option><option>29 - Mascara</option><option>30 - Ouargla</option><option>31 - Oran</option><option>32 - El Bayadh</option><option>33 - Illizi</option><option>34 - Bordj Bou Arréridj</option><option>35 - Boumerdès</option><option>36 - El Tarf</option><option>37 - Tindouf</option><option>38 - Tissemsilt</option><option>39 - El Oued</option><option>40 - Khenchela</option><option>41 - Souk Ahras</option><option>42 - Tipaza</option><option>43 - Mila</option><option>44 - Aïn Defla</option><option>45 - Naâma</option><option>46 - Aïn Témouchent</option><option>47 - Ghardaïa</option><option>48 - Relizane</option><option>49 - Timimoun</option><option>50 - Bordj Badji Mokhtar</option><option>51 - Ouled Djellal</option><option>52 - Béni Abbès</option><option>53 - In Salah</option><option>54 - In Guezzam</option><option>55 - Touggourt</option><option>56 - Djanet</option><option>57 - El M'Ghair</option><option>58 - El Meniaa</option><option>59 - Aflou</option><option>60 - Barika</option><option>61 - El Kantara</option><option>62 - Bir El Ater</option><option>63 - El Aricha</option><option>64 - Ksar Chellala</option><option>65 - Aïn Ouessara</option><option>66 - Messaad</option><option>67 - Ksar El Boukhari</option><option>68 - Bou Saâda</option><option>69 - El Abiodh Sidi Cheikh</option></select><span class="fl">Wilaya</span></div>
+            <div class="c6"><input class="inp" id="p-com" autocomplete="off"><span class="fl">Commune</span></div>
+          </div>
+
+          <p class="sect">Caractéristiques</p>
+          <div class="g12">
+            <div class="c12 rem"><div class="tags" id="tags"><input id="p-tag" placeholder="Ajouter …"><button type="button" class="sq" id="tag-add" aria-label="Ajouter la remarque">+</button></div><span class="fl">Remarques (Entrée pour ajouter)</span></div>
+              <div class="c12"><textarea class="inp tarea" id="p-note" rows="3" placeholder="Saisir des notes"></textarea><span class="fl">Note</span></div>
+          </div>
+
+          <p class="sect">Catégories et recommandation</p>
+            <div class="g12">
+              <div class="c6"><input class="inp" id="p-cat" list="dl-cat" placeholder="Choisir une catégorie" autocomplete="off"><span class="fl">Catégorie principale</span></div>
+              <div class="c6"><input class="inp" id="p-cats" placeholder="Saisir d’autres catégories (séparées par des virgules)" autocomplete="off"><span class="fl">Autres catégories</span></div>
+              <div class="c6"><input class="inp" id="p-from" list="dl-from" placeholder="Aucun" autocomplete="off"><span class="fl">Recommandé depuis</span></div>
+              <div class="c6"><select class="inp" id="p-by"><option value="">Choisir</option></select><span class="fl">Recommandé par (patient)</span></div>
+              <div class="c6"><input class="inp" id="p-refcode" placeholder="Saisir un code de recommandation (facultatif)" autocomplete="off"><span class="fl">Code de recommandation</span></div>
+            </div>
+            <datalist id="dl-cat"><option>VIP</option><option>Enfant</option><option>Famille</option><option>Personnel</option><option>Convention</option><option>Orthodontie</option><option>Implantologie</option></datalist>
+            <datalist id="dl-from"><option>Bouche-à-oreille</option><option>Facebook</option><option>Instagram</option><option>TikTok</option><option>Google</option><option>Site web</option><option>Panneau / enseigne</option><option>Autre</option></datalist>
+          </div>
+<div id="pt-more" hidden>
+            <p class="sect" style="margin-top:0">Adresse détaillée</p>
+            <div class="g12">
+            <div class="c8"><input class="inp" id="p-adr"><span class="fl">N° / Rue / Appartement</span></div>
+            <div class="c4"><input class="inp" id="p-cp" inputmode="numeric"><span class="fl">Code postal</span></div>
+            </div>
+          <p class="sect">Contact</p>
+          <div class="g12">
+            <div class="c6"><input class="inp" type="email" id="p-mail"><span class="fl">E-mail</span></div>
+            <div class="c6"><input class="inp" id="p-urg"><span class="fl">Contact d’urgence</span></div>
+          </div>
+
+          <p class="sect">Pièce d’identité</p>
+          <div class="nid">
+            <p class="nid-sub">Numéro d’identité, avec numérisations facultatives du recto et du verso enregistrées dans les fichiers du patient.</p>
+            <div class="g12">
+              <div class="c6"><input class="inp" id="p-cni" placeholder="Saisir le numéro d’identité" inputmode="numeric" autocomplete="off"><span class="fl">Numéro d’identité</span></div>
+            </div>
+            <label class="nid-sw"><input type="checkbox" id="nid-on"><span class="sw"></span>Images de la carte</label>
+            <div class="nid-g" id="nid-g" hidden><div class="nid-card"><small>Recto</small><div class="nid-drop" id="nid-front"><span class="nid-up"><label class="nid-btn"><svg class="i" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>Téléverser<input type="file" accept="image/*" data-nid="front" hidden></label><label class="nid-btn"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>Capturer<input type="file" accept="image/*" capture="environment" data-nid="front" hidden></label></span></div></div><div class="nid-card"><small>Verso</small><div class="nid-drop" id="nid-back"><span class="nid-up"><label class="nid-btn"><svg class="i" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M17 8l-5-5-5 5M12 3v12"/></svg>Téléverser<input type="file" accept="image/*" data-nid="back" hidden></label><label class="nid-btn"><svg class="i" viewBox="0 0 24 24"><path d="M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3z"/><circle cx="12" cy="13" r="3"/></svg>Capturer<input type="file" accept="image/*" capture="environment" data-nid="back" hidden></label></span></div></div></div>
+          </div>
+
+          <p class="sect">État civil</p>
+          <div class="g12">
+            <div class="c12"><input class="inp" id="p-pere"><span class="fl">Nom du père</span></div>
+            <div class="c3"><input class="inp ar" id="p-nom-ar"><span class="fl">Nom en arabe</span></div>
+            <div class="c3"><input class="inp ar" id="p-prenom-ar"><span class="fl">Prénom en arabe</span></div>
+            <div class="c3"><select class="inp" id="p-sf"><option></option><option>Célibataire</option><option>Marié(e)</option><option>Divorcé(e)</option><option>Veuf(ve)</option></select><span class="fl">Situation familiale</span></div>
+            <div class="c3"><input class="inp" id="p-epoux" disabled><span class="fl">Nom de l’époux / l’épouse</span></div>
+          </div>
+
+          <p class="sect">Travail et assurance</p>
+          <div class="g12">
+            <div class="c4"><input class="inp" id="p-prof"><span class="fl">Profession</span></div>
+            <div class="c4"><input class="inp" id="p-emp"><span class="fl">Employeur</span></div>
+            <div class="c4"><input class="inp" id="p-cnas"><span class="fl">N° CNAS</span></div>
+          </div>
+            <p class="sect">Communication</p>
+            <div class="g12">
+              <div class="c4"><input class="inp" type="tel" id="p-tel2"><span class="fl">Autre tél.</span></div>
+              <div class="c4"><select class="inp" id="p-sms"><option>Oui</option><option>Non</option></select><span class="fl">Conf. SMS</span></div>
+              <div class="c4"><select class="inp" id="p-cmail"><option>Oui</option><option>Non</option></select><span class="fl">Conf. e-mail</span></div>
+            </div>
+            <p class="sect">Suivi médical</p>
+            <div class="g12">
+              <div class="c6"><select class="inp" id="p-gs"><option></option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select><span class="fl">Groupe sanguin</span></div>
+              <div class="c6"><select class="inp" id="p-med"><option>Dr Mokhtar</option></select><span class="fl">Médecin traitant</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    </form>
+   </div>
+  </div>
+</main>
+<div class="toast" id="toast" role="status" hidden></div>
+<div class="ov" id="wv-ov" hidden>
+  <form class="md wv" id="wv-form" role="dialog" aria-modal="true" aria-labelledby="wv-h" novalidate>
+    <header class="nph"><div class="nph-ic"><svg class="i" viewBox="0 0 24 24"><path d="M6 11V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4M4 13a2 2 0 0 1 4 0v2h8v-2a2 2 0 0 1 4 0v5H4zM6 18v2M18 18v2"/></svg></div><div class="nph-t"><h3 id="wv-h">Entrée en salle d’attente</h3><small id="wv-name"></small></div><svg class="i nph-ghost" viewBox="0 0 24 24"><path d="M6 11V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4M4 13a2 2 0 0 1 4 0v2h8v-2a2 2 0 0 1 4 0v5H4zM6 18v2M18 18v2"/></svg><button type="button" class="x" data-wvclose aria-label="Fermer"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header>
+    <div class="mb">
+      <div class="mf"><label for="wv-motif">Motif de la visite</label><input class="inp" id="wv-motif" list="dl-motif" placeholder="Consultation, contrôle, douleur…" autocomplete="off"></div>
+      <div class="mf"><label for="wv-rdv">Heure du rendez-vous <span class="lmuted">(laisser vide si sans RDV)</span></label><input class="inp" type="time" id="wv-rdv"></div>
+      <datalist id="dl-motif"><option>Consultation</option><option>Contrôle</option><option>Douleur</option><option>Détartrage</option><option>Soins</option><option>Extraction</option><option>Endodontie</option><option>Prothèse</option><option>Implant</option><option>Orthodontie</option><option>Urgence</option></datalist>
+    </div>
+    <footer><button type="button" class="btn ghost" data-wvclose>Annuler</button><button type="submit" class="btn pri">Entrer en salle d’attente</button></footer>
+  </form>
+</div>
+<div class="ov" id="login-ov" hidden>
+  <form class="md loginm" id="login-form" role="dialog" aria-modal="true" aria-labelledby="login-h" novalidate>
+    <div class="role-top"><h3 id="login-h">Connexion au cabinet</h3><p>Entrez l’e-mail et le mot de passe du poste (médecin ou réception).</p></div>
+    <div class="mb">
+      <div class="mf"><label for="lg-mail">E-mail</label><input class="inp" type="email" id="lg-mail" autocomplete="username" required></div>
+      <div class="mf"><label for="lg-pass">Mot de passe</label><input class="inp" type="password" id="lg-pass" autocomplete="current-password" required></div>
+      <p class="lg-err" id="lg-err" role="alert" hidden></p>
+    </div>
+    <footer><button type="submit" class="btn pri" id="lg-go">Se connecter</button></footer>
+  </form>
+</div>
+<div class="ov" id="pin-ov" hidden>
+  <form class="md loginm pinm" id="pin-form" role="dialog" aria-modal="true" aria-labelledby="pin-h" novalidate>
+    <div class="role-top"><span class="pin-ic"><svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg></span><h3 id="pin-h">Code du médecin</h3><p id="pin-sub">Saisissez le code pour passer en mode médecin.</p></div>
+    <div class="mb">
+      <div class="mf"><label for="pin-1" id="pin-l1">Code</label><input class="inp pin-in" type="password" id="pin-1" inputmode="numeric" autocomplete="off" maxlength="8"></div>
+      <div class="mf" id="pin-f2" hidden><label for="pin-2">Confirmer le code</label><input class="inp pin-in" type="password" id="pin-2" inputmode="numeric" autocomplete="off" maxlength="8"></div>
+      <p class="lg-err" id="pin-err" role="alert" hidden></p>
+    </div>
+    <footer><button type="button" class="btn ghost" data-pinclose>Annuler</button><button type="submit" class="btn pri" id="pin-go">Valider</button></footer>
+  </form>
+</div>
+<div class="ov" id="role-ov" hidden>
+  <div class="md rolem" role="dialog" aria-modal="true" aria-labelledby="role-h">
+    <div class="role-top"><h3 id="role-h">Qui utilise cet appareil ?</h3><p>Le choix est mémorisé sur cet appareil. Vous pourrez le changer en touchant votre nom en haut.</p></div>
+    <div class="role-opts">
+      <button type="button" class="role-o doc" data-role="medecin"><span class="bub"><svg class="i" viewBox="0 0 24 24"><path d="M6 3v6a6 6 0 0 0 12 0V3M6 3H4M18 3h2M12 15v2a4 4 0 0 0 8 0v-3"/><circle cx="20" cy="12" r="2"/></svg></span><b>Médecin</b><small>Fait entrer les patients en soins et termine les visites</small></button>
+      <button type="button" class="role-o rec" data-role="reception"><span class="bub"><svg class="i" viewBox="0 0 24 24"><path d="M3 18v-2a9 9 0 0 1 18 0v2M2 18h20M12 7V5M10 5h4"/></svg></span><b>Réception</b><small>Enregistre les patients et gère les arrivées</small></button>
+    </div>
+    <div class="role-foot"><span id="role-acct"></span><button type="button" class="btn ghost" id="pin-change" hidden>Changer le code médecin</button><button type="button" class="btn ghost" id="logout" hidden>Se déconnecter</button></div>
+  </div>
+</div>
+<div class="ov" id="nx-ov" hidden>
+  <div class="md nx" role="dialog" aria-modal="true" aria-labelledby="nx-h">
+    <div class="nx-top"><div class="nx-ok"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></div>
+      <h3 id="nx-h"><span id="nx-name"></span> est enregistré(e)</h3><p>Que souhaitez-vous faire maintenant ?</p></div>
+    <div class="nx-opts">
+      <button type="button" class="nx-o violet" id="nx-wait"><span class="bub"><svg class="i" viewBox="0 0 24 24"><path d="M6 11V7a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v4M4 13a2 2 0 0 1 4 0v2h8v-2a2 2 0 0 1 4 0v5H4zM6 18v2M18 18v2"/></svg></span><b>Entrer en salle d’attente</b><small>Le patient est arrivé, il attend maintenant</small></button>
+      <button type="button" class="nx-o green" id="nx-plan"><span class="bub"><svg class="i" viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><path d="M16 2v4M8 2v4M3 10h18M12 14v4M10 16h4"/></svg></span><b>Planifier</b><small>Ouvrir l’agenda pour fixer un rendez-vous</small></button>
+    </div>
+    <button type="button" class="nx-later" id="nx-later">Plus tard</button>
+  </div>
+</div>
+<div class="ov" id="np-ov" hidden>
+  <form class="md" id="np-form" role="dialog" aria-modal="true" aria-labelledby="np-h" novalidate>
+    <header class="nph"><div class="nph-ic"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg></div><div class="nph-t"><h3 id="np-h">Nouveau patient</h3><small>Créer un nouveau dossier</small></div><svg class="i nph-ghost" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg><button type="button" class="x" data-npclose aria-label="Fermer"><svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg></button></header>
+    <div class="mb">
+      <div class="two">
+        <div class="mf"><label for="n-nom">Nom <em>*</em></label><input class="inp nreq" id="n-nom" autocomplete="off"></div>
+        <div class="mf"><label for="n-prenom">Prénom <em>*</em></label><input class="inp nreq" id="n-prenom" autocomplete="off"></div>
+      </div>
+      <div class="two">
+        <div class="mf"><label for="n-tel">Téléphone</label><input class="inp" id="n-tel" type="tel" placeholder="0555 123 456"></div>
+        <div class="mf"><label for="n-genre">Genre</label><select class="inp" id="n-genre"><option value="" disabled selected hidden>Choisir…</option><option value="M">Masculin</option><option value="F">Féminin</option></select></div>
+      </div>
+      <div class="two">
+        <div class="mf"><label for="n-dob">Date de naissance</label><input class="inp" id="n-dob" type="date"></div>
+        <div class="mf"><label for="n-age">Âge</label><div class="agew"><input class="inp" id="n-age" type="number" min="0" max="120" inputmode="numeric" placeholder="ex. 34"><span>ans</span></div></div>
+      </div>
+      <div class="mf"><label>Adresse</label>
+        <div class="two">
+          <select class="inp" id="n-wil" aria-label="Wilaya"></select>
+          <input class="inp" id="n-com" placeholder="Commune" aria-label="Commune">
+        </div>
+      </div>
+      <button type="button" class="addf" id="n-addadm"><svg class="i" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg>Informations complémentaires</button>
+      <div class="adm" id="n-adm" hidden>
+        <div class="admh">Informations complémentaires <button type="button" id="n-hideadm">Masquer</button></div>
+        <p class="admg">Contact</p>
+        <div class="two">
+          <div class="mf"><label for="n-mail">Email</label><input class="inp" id="n-mail" type="email"></div>
+          <div class="mf"><label for="n-urg">Contact d’urgence</label><input class="inp" id="n-urg" placeholder="Ex : Épouse : 0661 23 45 67"></div>
+        </div>
+        <p class="admg">Identité</p>
+        <div class="two">
+          <div class="mf"><label for="n-cni">N° carte d’identité</label><input class="inp" id="n-cni" placeholder="Identifiant définitif"></div>
+          <div class="mf"><label for="n-pere">Nom du père</label><input class="inp" id="n-pere"></div>
+        </div>
+        <p class="admg">Adresse</p>
+        <div class="two">
+          <div class="mf"><label for="n-adr">Adresse détaillée</label><input class="inp" id="n-adr" placeholder="Rue, n°, résidence…"></div>
+          <div class="mf"><label for="n-cp">Code postal</label><input class="inp" id="n-cp" inputmode="numeric"></div>
+        </div>
+        <p class="admg">Travail et assurance</p>
+        <div class="three">
+          <div class="mf"><label for="n-prof">Profession</label><input class="inp" id="n-prof"></div>
+          <div class="mf"><label for="n-emp">Employeur</label><input class="inp" id="n-emp"></div>
+          <div class="mf"><label for="n-cnas">N° CNAS / NSS</label><input class="inp" id="n-cnas"></div>
+        </div>
+      </div>
+    </div>
+    <footer><button type="button" class="btn ghost" data-npclose>Annuler</button><button type="submit" class="btn pri">Enregistrer</button></footer>
+  </form>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.118.0/dist/umd/supabase.js"></script>
+<script>
+/* ===== configuration Supabase (URL du projet + clé publique « anon ») ===== */
+const SB_URL="https://hmrzyvylmwkfvmycfwdt.supabase.co",SB_KEY="sb_publishable_FpaUK4tvSXirASVp-fi3wA_TCiXNJek";
+</script>
+<script>
+const $=s=>document.querySelector(s);
+const pad=n=>String(n).padStart(2,"0");
+function tick(){
+  const d=new Date();
+  const set=(k,v)=>document.querySelectorAll('[data-c="'+k+'"]').forEach(e=>e.textContent=v);
+  set("date",`${pad(d.getDate())} / ${pad(d.getMonth()+1)} / ${d.getFullYear()}`);
+  set("day",d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long"}));
+  set("hm",`${pad(d.getHours())}:${pad(d.getMinutes())}`);
+  set("dayfull",d.toLocaleDateString("fr-FR",{weekday:"long",day:"numeric",month:"long",year:"numeric"}));
+  set("time",`${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`);
+  if(!$("#v-salle").hidden)document.querySelectorAll("#w-body .wait").forEach(e=>e.textContent=wfmt(+e.dataset.a,+e.dataset.e||0));
+}
+tick();setInterval(tick,1000);
+const next={"qa-rdv":"L’écran « Ajouter un rendez-vous »","qa-agenda":"L’agenda"};
+Object.keys(next).forEach(id=>$("#"+id).onclick=()=>{$("#hint-t").textContent=next[id]+" sera construit dans une prochaine étape.";$("#hint").hidden=false});
+const side=$("#side"),scrim=$("#scrim");
+$("#burger").onclick=()=>{side.classList.add("open");scrim.classList.add("on")};
+scrim.onclick=()=>{side.classList.remove("open");scrim.classList.remove("on")};
+$("#fs").onclick=()=>{try{document.fullscreenElement?document.exitFullscreen():document.documentElement.requestFullscreen().catch(()=>{})}catch(e){}};
+/* routing */
+const VIEWS={"":["v-dashboard","Tableau de bord"],"dossiers":["v-dossiers","Dossiers patients"],"dossier-patient":["v-dossier-patient","Dossier patient"],"salle-attente":["v-salle","Salle d’attente"]};
+function route(){
+  const h=location.hash.slice(1),v=VIEWS[h]||VIEWS[""];
+  document.querySelectorAll(".view").forEach(e=>e.hidden=e.id!==v[0]);
+  document.body.classList.toggle("dd",v[0]!=="v-dashboard");
+  if(v[0]==="v-dossiers")renderList();
+  if(v[0]==="v-salle")renderWait();
+  if(v[0]==="v-dossier-patient"&&!CUR&&!PATIENTS.length){location.replace("#dossiers");return}
+  $("#crumb").textContent=v[1];window.scrollTo(0,0);
+}
+addEventListener("hashchange",route);
+$("#ps-q").oninput=e=>$(".ps-go").classList.toggle("on",!!e.target.value.trim());
+$("#psearch").onsubmit=e=>{e.preventDefault();const q=$("#ps-q").value.trim();if(!q){$("#ps-q").focus();return}$("#l-q").value=q;if(location.hash==="#dossiers")renderList();else location.hash="dossiers"};
+$("#dd-fs").onclick=()=>$("#fs").onclick();
+$("#qa-add").onclick=()=>openNew();
+$("#w-add").onclick=()=>openNew();
+$("#qa-room").onclick=()=>{WMODE="";location.hash="salle-attente"};
+/* ===== données partagées (base de données de l'artifact) ===== */
+let DB=null,PATIENTS=[],VISITS=[],CUR=null,LASTNEW=null;
+const todayKey=()=>{const d=new Date();return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}`};
+const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,8);
+const strip=o=>{const r={...o};delete r.id;return r};
+const pAge=p=>p.dob?(parseInt(age(p.dob))||""):(p.ageY||"");
+const SYNC={load:"Connexion…",on:"Synchronisé",slow:"Connexion lente…",off:"Hors ligne · non enregistré",err:"Erreur de synchronisation",auth:"Non connecté"};
+function setSync(k){const c=$("#sync-chip");if(!c)return;c.dataset.s=k;c.lastElementChild.textContent=SYNC[k]}
+async function put(col,id,data){
+  if(!DB){const arr=col==="patients"?PATIENTS:VISITS,i=arr.findIndex(x=>x.id===id),o={...data,id};if(i<0)arr.push(o);else arr[i]=o;onData();return}
+  const ref=DB.collection(col).doc(id);
+  try{await ref.set(data)}catch(e){
+    if(e&&e.code==="unavailable"){await new Promise(r=>setTimeout(r,700+Math.random()*900));try{return await ref.set(data)}catch(e2){e=e2}}
+    toast(e&&e.code==="invalid_argument"?"Enregistrement refusé : ce compte n’a pas le droit de modifier les données.":e&&e.code==="quota_exceeded"?"La base de données est pleine.":"Échec de l’enregistrement. Vérifiez la connexion et réessayez.");
+    throw e}
+}
+let onDataT=0;
+function onData(){cancelAnimationFrame(onDataT);onDataT=requestAnimationFrame(()=>{PATIENTS.sort((a,b)=>(b.num||0)-(a.num||0));updateCounts();const h=location.hash;if(h==="#dossiers")renderList();if(h==="#salle-attente")renderWait()})}
+/* adaptateur Supabase : même interface que la base précédente (collection/doc/set/where/onSnapshot) */
+function sbDB(sb){
+  const err=e=>{const x=new Error(e.message||"erreur");x.code=e.code==="42501"||e.status===401||e.status===403?"invalid_argument":"unavailable";return x};
+  const coll=(col,flt)=>({
+    doc:id=>({set:async d=>{const row={id,data:d,updated_at:new Date().toISOString()};if(col==="visits")row.date=d.date||todayKey();
+      const {error}=await sb.from(col).upsert(row);if(error)throw err(error)}}),
+    where:(f,op,v)=>coll(col,[f,v]),
+    onSnapshot:(cb,fail)=>{
+      let rows=new Map();
+      const emit=()=>cb({docs:[...rows.values()].map(r=>({id:r.id,data:()=>r.data||{}})),metadata:{fromCache:false}});
+      const load=async()=>{const all=[];for(let i=0;;i+=1000){let q=sb.from(col).select("id,data").range(i,i+999);if(flt)q=q.eq(flt[0],flt[1]);
+          const {data,error}=await q;if(error){fail&&fail(error);return}all.push(...data);if(data.length<1000)break}
+        rows=new Map(all.map(r=>[r.id,r]));emit()};
+      const ch=sb.channel("rt-"+col+"-"+newId()).on("postgres_changes",{event:"*",schema:"public",table:col,...(flt?{filter:flt[0]+"=eq."+flt[1]}:{})},p=>{
+        if(p.eventType==="DELETE"){if(p.old&&p.old.id)rows.delete(p.old.id)}else rows.set(p.new.id,p.new);emit()})
+        .subscribe(st=>{if(st==="SUBSCRIBED")load();else if(st==="CHANNEL_ERROR"||st==="TIMED_OUT")setSync("slow")});
+      return()=>sb.removeChannel(ch)}
+  });
+  return{collection:c=>coll(c)};
+}
+let SB=null,DAY=todayKey();
+function connect(){
+  setSync("load");
+  if(!window.supabase||SB_URL.startsWith("__")){setSync("off");onData();return}
+  SB=window.supabase.createClient(SB_URL,SB_KEY,{auth:{persistSession:true,autoRefreshToken:true}});
+  SB.auth.getSession().then(({data})=>{if(data.session)start(data.session);else showLogin()});
+}
+function showLogin(){setSync("auth");$("#login-ov").hidden=false;setTimeout(()=>$("#lg-mail").focus(),30)}
+function start(session){
+  $("#login-ov").hidden=true;$("#role-acct").textContent="Connecté : "+(session.user.email||"");$("#logout").hidden=false;
+  if(!ROLE)$("#role-ov").hidden=false;
+  const db=sbDB(SB);DB=db;let ok=0;const tm=setTimeout(()=>{if(ok<2)setSync("slow")},10000);
+  const first={p:true,v:true},done=k=>{if(first[k]){first[k]=false;if(++ok===2){clearTimeout(tm);setSync("on")}}};
+  const fail=()=>{clearTimeout(tm);setSync("err")};
+  db.collection("patients").onSnapshot(sn=>{PATIENTS=sn.docs.map(d=>({...d.data(),id:d.id}));done("p");onData()},fail);
+  db.collection("visits").where("date","==",DAY).onSnapshot(sn=>{VISITS=sn.docs.map(d=>({...d.data(),id:d.id}));done("v");onData()},fail);
+}
+$("#login-form").onsubmit=async e=>{e.preventDefault();const m=$("#lg-mail").value.trim(),pw=$("#lg-pass").value,er=$("#lg-err");er.hidden=true;
+  if(!m||!pw){er.textContent="Saisissez l’e-mail et le mot de passe.";er.hidden=false;return}
+  $("#lg-go").disabled=true;const {data,error}=await SB.auth.signInWithPassword({email:m,password:pw});$("#lg-go").disabled=false;
+  if(error){er.textContent=/invalid/i.test(error.message)?"E-mail ou mot de passe incorrect.":"Connexion impossible. Vérifiez internet.";er.hidden=false;return}
+  $("#lg-pass").value="";start(data.session)};
+$("#logout").onclick=async()=>{if(!confirm("Se déconnecter de cet appareil ?"))return;await SB.auth.signOut();location.reload()};
+/* nouveau jour : recharger la liste du jour */
+setInterval(()=>{if(todayKey()!==DAY)location.reload()},60000);
+const EORD={"Actif":0,"En attente":1,"Terminé":2,"Annulé":3};
+function waitRows(){
+  return VISITS.slice().sort((a,b)=>(EORD[a.etat]-EORD[b.etat])||((a.arr||0)-(b.arr||0))).map((v,i)=>{const p=PATIENTS.find(x=>x.id===v.pid)||{};
+    return{...v,n:i+1,num:String(p.num||"").padStart(4,"0"),nom:p.nom||v.nom||"",prenom:p.prenom||v.prenom||"",age:pAge(p),car:(p.remarks||[]).join(", ")}});
+}
+/* poste : médecin / réception (mémorisé sur l'appareil) */
+let ROLE="";
+try{ROLE=localStorage.getItem("itkan-role")||""}catch(e){}
+function applyRole(){
+  const doc=ROLE==="medecin";
+  document.querySelectorAll(".role-name").forEach(e=>e.textContent=doc?"Dr Mokhtar":"Réception");
+  document.querySelectorAll(".role-lbl").forEach(e=>e.textContent=doc?"Médecin":"Accueil des patients");
+  document.querySelectorAll(".role-av").forEach(e=>e.textContent=doc?"DM":"RC");
+  if(location.hash==="#salle-attente")renderWait();
+}
+document.querySelectorAll("[data-role-open]").forEach(b=>{b.onclick=()=>{$("#role-ov").hidden=false;setTimeout(()=>$(".role-o").focus(),30)};b.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();b.click()}}});
+function setRole(r){ROLE=r;try{localStorage.setItem("itkan-role",ROLE)}catch(e){}$("#role-ov").hidden=true;$("#pin-change").hidden=ROLE!=="medecin";applyRole()}
+/* code du médecin : empreinte SHA-256 enregistrée dans la base (ligne de réglages) */
+async function pinHash(pin){const b=await crypto.subtle.digest("SHA-256",new TextEncoder().encode("itkan-pin:"+pin));return[...new Uint8Array(b)].map(x=>x.toString(16).padStart(2,"0")).join("")}
+async function getPin(){
+  if(SB&&DB){const {data,error}=await SB.from("visits").select("data").eq("id","_settings").maybeSingle();if(error)throw error;return data&&data.data&&data.data.pin||""}
+  try{return localStorage.getItem("itkan-pin")||""}catch(e){return""}
+}
+async function savePin(h){
+  if(SB&&DB){await put("visits","_settings",{date:"_config",pin:h});return}
+  try{localStorage.setItem("itkan-pin",h)}catch(e){}
+}
+let PINMODE="check";
+function openPin(mode){PINMODE=mode;const c=mode!=="check";
+  $("#pin-h").textContent=mode==="new"?"Créer le code du médecin":mode==="change"?"Nouveau code du médecin":"Code du médecin";
+  $("#pin-sub").textContent=c?"Choisissez un code de 4 à 8 chiffres. Il sera demandé pour passer en mode médecin sur tous les appareils.":"Saisissez le code pour passer en mode médecin.";
+  $("#pin-l1").textContent=c?"Nouveau code":"Code";$("#pin-f2").hidden=!c;
+  $("#pin-1").value="";$("#pin-2").value="";$("#pin-err").hidden=true;$("#role-ov").hidden=true;$("#pin-ov").hidden=false;setTimeout(()=>$("#pin-1").focus(),30)}
+const pinErr=t=>{const e=$("#pin-err");e.textContent=t;e.hidden=false};
+document.querySelectorAll("[data-pinclose]").forEach(b=>b.onclick=()=>{$("#pin-ov").hidden=true;if(!ROLE)$("#role-ov").hidden=false});
+$("#pin-form").onsubmit=async e=>{e.preventDefault();const a=$("#pin-1").value.trim(),go=$("#pin-go");
+  if(!/^\d{4,8}$/.test(a)){pinErr("Le code doit contenir 4 à 8 chiffres.");return}
+  go.disabled=true;
+  try{
+    if(PINMODE==="check"){const h=await getPin();if(h&&h!==await pinHash(a)){pinErr("Code incorrect.");$("#pin-1").value="";$("#pin-1").focus();return}$("#pin-ov").hidden=true;setRole("medecin");return}
+    if(a!==$("#pin-2").value.trim()){pinErr("Les deux codes ne correspondent pas.");return}
+    await savePin(await pinHash(a));$("#pin-ov").hidden=true;
+    if(PINMODE==="new")setRole("medecin");toast("Code du médecin enregistré.");
+  }catch(err){pinErr("Vérification impossible. Vérifiez la connexion internet.")}
+  finally{go.disabled=false}
+};
+document.querySelectorAll(".role-o").forEach(b=>b.onclick=async()=>{
+  if(b.dataset.role!=="medecin"){setRole("reception");return}
+  if(ROLE==="medecin"){setRole("medecin");return}
+  let h="";try{h=await getPin()}catch(e){toast("Connexion impossible. Réessayez.");return}
+  openPin(h?"check":"new")});
+$("#pin-change").onclick=()=>{if(ROLE==="medecin")openPin("change")};
+$("#pin-change").hidden=ROLE!=="medecin";
+let WMODE="";
+function updateCounts(){
+  const W=waitRows(),rdv=W.filter(p=>p.rdv&&p.etat!=="Annulé"),c={red:`${rdv.length} <small>/ ${rdv.length}</small>`,green:WM.green[1],orange:WM.orange[1],violet:WM.violet[1]};
+  document.querySelectorAll(".wr[data-m]").forEach(e=>{const m=e.dataset.m,v=c[m],t=e.querySelector(".tx b");if(t)t.innerHTML=typeof v==="function"?W.filter(v).length:v});
+}
+const WM={red:["Rendez-vous du jour",p=>p.rdv&&p.etat!=="Annulé"],green:["En attente avec RDV",p=>p.rdv&&p.etat==="En attente"],orange:["En attente sans RDV",p=>!p.rdv&&p.etat==="En attente"],violet:["Total en attente",p=>p.etat==="En attente"]};
+function setMode(m){WMODE=(WMODE===m||m==="violet")?"":m;if(location.hash!=="#salle-attente")location.hash="salle-attente";else renderWait()}
+document.querySelectorAll(".wr[data-m]").forEach(c=>{c.onclick=()=>{if(c.closest("#v-salle"))setMode(c.dataset.m);else{WMODE=c.dataset.m==="violet"?"":c.dataset.m;location.hash="salle-attente"}};c.onkeydown=e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();c.click()}}});
+function wfmt(a,e){const t=Math.max(0,Math.floor(((e||Date.now())-a)/1000)),h=Math.floor(t/3600),m=Math.floor(t/60)%60,x=t%60;return (h?h+":"+pad(m):pad(m))+":"+pad(x)}
+const hm=t=>{const d=new Date(t);return pad(d.getHours())+":"+pad(d.getMinutes())};
+const dz=v=>v?v.toLocaleString("fr-FR")+" DA":"0 DA";
+const CHIP={"En attente":"att","Actif":"act","Terminé":"fin","Annulé":"ann"};
+function renderWait(){
+  const g=id=>$("#"+id).value.trim().toLowerCase(),q=g("w-q"),today=new Date();
+  const V=$("#v-salle");if(WMODE)V.dataset.m=WMODE;else delete V.dataset.m;
+  V.querySelectorAll(".wr[data-m]").forEach(c=>c.classList.toggle("sel",c.dataset.m===WMODE));
+  $("#w-title").textContent=WMODE?WM[WMODE][0]:"Consultations";$("#w-lbl").textContent=WMODE?WM[WMODE][0]:"Patients en salle d’attente";$("#w-reset").hidden=!WMODE;
+  const W=waitRows(),base=WMODE?W.filter(WM[WMODE][1]).sort((a,b)=>WMODE==="red"?(a.rdv>b.rdv?1:-1):0):W.filter(p=>$("#w-etat").value==="Annulé"||p.etat!=="Annulé");
+  const L=base.filter(p=>(!g("w-num")||p.num.includes(g("w-num")))&&(!g("w-nom")||p.nom.toLowerCase().includes(g("w-nom")))&&(!g("w-prenom")||p.prenom.toLowerCase().includes(g("w-prenom")))
+    &&(!$("#w-etat").value||p.etat===$("#w-etat").value)&&(!$("#w-mode").value||p.mode===$("#w-mode").value)
+    &&(!q||(p.num+" "+p.nom+" "+p.prenom).toLowerCase().includes(q)));
+  $("#w-count").textContent=L.length;$("#w-aff").textContent=L.length?`Affichage 1-${L.length} sur ${L.length}`:"Affichage 0-0 sur 0";
+  const date=`${pad(today.getDate())}/${pad(today.getMonth()+1)}/${today.getFullYear()}`;
+  $("#w-body").innerHTML=L.length?L.map(p=>{const w=Math.round(((p.deb||Date.now())-p.arr)/60000),lk=p.etat==="Actif",fin=p.etat==="Terminé"||p.etat==="Annulé";return`<tr${lk?' class="lock" title="Patient en salle de soins : ligne bloquée"':fin?' class="done"':""}>
+    <td class="num lmuted">${p.n}</td>
+    <td class="pn"><b>${esc(p.nom)} ${esc(p.prenom)}</b><small>N° ${p.num}${p.age?` · ${p.age} ans`:""}</small></td>
+    <td>${p.car?`<span class="chip carc">${esc(p.car)}</span>`:'<span class="lmuted">—</span>'}</td>
+    <td>${p.rdv?`<span class="chip rdv">${p.rdv}</span>`:'<span class="chip sans">Sans RDV</span>'}</td>
+    <td class="num">${hm(p.arr)}</td>
+    <td class="num"><span class="wait" data-a="${p.arr}" data-e="${p.deb||(fin?p.fin||p.arr:"")}">${wfmt(p.arr,p.deb||(fin?p.fin||p.arr:0))}</span>${p.deb?`<small class="sub">vu à ${hm(p.deb)}</small>`:""}</td>
+    <td>${p.raison?esc(p.raison):'<span class="lmuted">—</span>'}</td>
+    <td class="num">${!p.pay&&!p.reste?'<span class="lmuted">—</span>':`<span class="${p.reste?"rest":"paid"}">${p.reste?dz(p.reste):"Réglé"}</span><small class="sub">${p.pay?dz(p.pay)+" payé · ":""}${esc(p.mode)}</small>`}</td>
+    <td>${lk?`<span class="chip lockc"><svg class="i" viewBox="0 0 24 24"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 0 1 8 0v4"/></svg>En soins</span><small class="sub tsoin"><svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M10 2h4"/></svg><span class="wait" data-a="${p.deb}" data-e="">${wfmt(p.deb,0)}</span></small>`:`<span class="chip ${CHIP[p.etat]}">${p.etat}</span>${p.etat==="Terminé"&&p.fin?`<small class="sub">à ${hm(p.fin)}${p.deb?` · ${Math.max(1,Math.round((p.fin-p.deb)/60000))} min de soins`:""}</small>`:""}`}</td>
+    <td class="wact">${actBtns(p)}</td></tr>`}).join(""):`<tr><td colspan="10" class="wempty">${VISITS.length?"Aucun patient ne correspond à ce filtre.":"Aucun patient en salle d’attente aujourd’hui. Ajoutez un patient ou ouvrez un dossier et utilisez « Envoyer en salle d’attente »."}</td></tr>`;
+  const enc=L.reduce((a,p)=>a+p.pay,0),rest=L.reduce((a,p)=>a+p.reste,0);
+  const it=(l,v,c)=>`<div class="${c||""}"><small>${l}</small><b>${v}</b></div>`;
+  $("#w-foot").innerHTML=it("Encaissements",dz(enc),"in")+it("Reste à payer",dz(rest),"out")+it("Crédit ajouté","—")+it("Crédit débité","—")+it("Total caisse",dz(enc),"tot");
+}
+const IC_GO='<svg class="i" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></svg>',IC_OK='<svg class="i" viewBox="0 0 24 24"><path d="M20 6 9 17l-5-5"/></svg>',IC_X='<svg class="i" viewBox="0 0 24 24"><path d="M18 6 6 18M6 6l12 12"/></svg>';
+function actBtns(p){
+  const doc=ROLE==="medecin";
+  if(p.etat==="En attente")return(doc?`<button type="button" class="wbtn-s go" data-act="soin" data-id="${p.id}">${IC_GO}En soins</button> `:"")+`<button type="button" class="wbtn-s x" data-act="annul" data-id="${p.id}" aria-label="Annuler la visite de ${esc(p.prenom)} ${esc(p.nom)}" title="Annuler">${IC_X}</button>`;
+  if(p.etat==="Actif")return doc?`<button type="button" class="wbtn-s end" data-act="fin" data-id="${p.id}">${IC_OK}Terminer</button>`:"";
+  return "";
+}
+async function setVisit(id,patch){const v=VISITS.find(x=>x.id===id);if(!v)return;await put("visits",id,{...strip(v),...patch})}
+$("#w-body").addEventListener("click",async e=>{
+  const b=e.target.closest("[data-act]");if(!b)return;const v=VISITS.find(x=>x.id===b.dataset.id);if(!v)return;
+  const name=`${v.prenom} ${v.nom}`;
+  if(b.dataset.act==="annul"&&!confirm(`Annuler la visite de ${name} ?`))return;
+  b.disabled=true;
+  try{
+    if(b.dataset.act==="soin"){await setVisit(v.id,{etat:"Actif",deb:Date.now()});toast(`${name} est en salle de soins.`)}
+    else if(b.dataset.act==="fin"){await setVisit(v.id,{etat:"Terminé",fin:Date.now()});toast(`Visite de ${name} terminée.`)}
+    else if(b.dataset.act==="annul"){await setVisit(v.id,{etat:"Annulé",fin:Date.now()});toast(`Visite de ${name} annulée.`)}
+  }catch(err){b.disabled=false}
+});
+$("#w-reset").onclick=()=>{WMODE="";renderWait()};
+$("#w-ftog").onclick=e=>{const f=$("#w-fil");f.hidden=!f.hidden;e.currentTarget.setAttribute("aria-expanded",!f.hidden);e.currentTarget.classList.toggle("on",!f.hidden)};
+["w-num","w-nom","w-prenom","w-q"].forEach(id=>$("#"+id).oninput=renderWait);
+["w-etat","w-mode","w-med","w-du","w-au"].forEach(id=>$("#"+id).onchange=renderWait);
+$("#qa-files").onclick=()=>{$("#l-q").value="";location.hash="dossiers"};
+
+/* nouveau patient */
+const cr=$("#p-credit");
+$("#cr-plus").onclick=()=>cr.value=(+cr.value||0)+100;
+$("#cr-minus").onclick=()=>cr.value=(+cr.value||0)-100;
+$("#p-conv").onchange=e=>{$("#p-convdate").disabled=!e.target.checked;if(e.target.checked&&!$("#p-convdate").value)$("#p-convdate").valueAsDate=new Date()};
+$("#photo-btn").onclick=()=>$("#p-photo").click();
+$("#p-photo").onchange=e=>{const f=e.target.files[0];if(!f)return;const r=new FileReader();r.onload=()=>{$("#photo").innerHTML=`<img alt="Photo du patient" src="${r.result}">`};r.readAsDataURL(f)};
+$("#p-sf").onchange=e=>{const m=e.target.value==="Marié(e)";$("#p-epoux").disabled=!m;if(!m)$("#p-epoux").value=""};
+const tagIn=$("#p-tag");
+function addTag(){const v=tagIn.value.trim();if(!v)return;addTagVal(v);tagIn.value=""}
+function addTagVal(v){const t=document.createElement("span");t.className="tag";t.dataset.v=v;t.textContent=v;const x=document.createElement("button");x.type="button";x.setAttribute("aria-label","Retirer");x.textContent="×";x.onclick=()=>t.remove();t.append(x);$("#tags").insertBefore(t,tagIn)}
+tagIn.onkeydown=e=>{if(e.key==="Enter"){e.preventDefault();addTag()}};
+$("#tag-add").onclick=addTag;
+let tt;function toast(m){const t=$("#toast");t.textContent=m;t.hidden=false;clearTimeout(tt);tt=setTimeout(()=>t.hidden=true,3500)}
+document.querySelectorAll(".req").forEach(i=>i.addEventListener("input",()=>i.classList.remove("bad")));
+$("#pform").onsubmit=async e=>{
+  e.preventDefault();
+  const miss=[...document.querySelectorAll(".req")].filter(i=>!i.value.trim());
+  miss.forEach(i=>i.classList.add("bad"));
+  if(miss.length){miss[0].focus();toast("Complétez les champs obligatoires (*)");return}
+  const old=PATIENTS.find(x=>x.id===CUR);
+  const data={...(old?strip(old):{num:nextNum(),created:Date.now()}),...collectFile(),updated:Date.now()};
+  const id=CUR||newId(),btn=e.submitter||$("#pform button[type=submit]");btn.disabled=true;
+  try{await put("patients",id,data);CUR=id;$("#f-title").textContent=`Dossier de ${data.prenom} ${data.nom}`;toast(`Dossier de ${data.prenom} ${data.nom} enregistré.`)}catch(err){}
+  btn.disabled=false;
+};
+/* ===== patients ===== */
+const nextNum=()=>PATIENTS.reduce((m,p)=>Math.max(m,p.num||0),0)+1;
+const age=d=>{if(!d)return"";const b=new Date(d),n=new Date();let a=n.getFullYear()-b.getFullYear();if(n<new Date(n.getFullYear(),b.getMonth(),b.getDate()))a--;return a+" ans"};
+const fdate=d=>d?new Date(d).toLocaleDateString("fr-FR",{day:"2-digit",month:"2-digit",year:"numeric"}):"—";
+const esc=x=>String(x??"").replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const CHEV='<svg class="i chev" viewBox="0 0 24 24"><path d="m9 6 6 6-6 6"/></svg>';
+function renderList(){
+  const q=$("#l-q").value.trim().toLowerCase().replace(/\s+/g," "),qd=q.replace(/\s/g,"");
+  const rows=PATIENTS.map((p,i)=>({p,i})).filter(({p})=>!q||(`${p.nom} ${p.prenom}`.toLowerCase().includes(q)||`${p.prenom} ${p.nom}`.toLowerCase().includes(q)||(qd&&(p.tel||"").replace(/\s/g,"").includes(qd))||(qd&&String(p.num||"").padStart(4,"0").includes(qd))));
+  $("#l-count").textContent=`${rows.length} patient(s)`;
+  if(!rows.length){$("#l-list").innerHTML=`<div class="lempty"><svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><span>${q?"Aucun patient ne correspond à cette recherche.":"Aucun patient pour le moment."}</span><button type="button" class="btn pri" data-new>${'<svg class="i" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M19 8v6M22 11h-6"/></svg>'}Enregistrer un nouveau patient</button></div>`;$("[data-new]").onclick=()=>openNew();return}
+  $("#l-list").innerHTML=`<div class="card ltable"><div class="lrow h"><span>Patient</span><span class="c-age">Âge</span><span>Téléphone</span><span class="c-wil">Wilaya</span><span class="c-last">Dernière visite</span><span></span></div>${rows.map(({p,i})=>`<button type="button" class="lrow" data-i="${i}"><span class="lname"><span class="av ${p.sexe==="F"?"f":""}">${esc(p.prenom[0]||"")}${esc(p.nom[0]||"")}</span><span style="min-width:0"><b>${esc(p.nom)} ${esc(p.prenom)}</b><small>N° ${String(p.num||"").padStart(4,"0")} · ${p.sexe==="F"?"Féminin":p.sexe==="M"?"Masculin":"—"}</small></span></span><span class="c-age lmuted">${age(p.dob)||(p.ageY?p.ageY+" ans":"—")}</span><span>${esc(p.tel)||"—"}</span><span class="c-wil lmuted">${esc((p.wil||"").replace(/^\d+ - /,""))||"—"}</span><span class="c-last lmuted">${fdate(p.lastVisit)}</span>${CHEV}</button>`).join("")}</div>`;
+  document.querySelectorAll(".lrow[data-i]").forEach(b=>b.onclick=()=>openFile(PATIENTS[+b.dataset.i]));
+}
+$("#l-q").oninput=renderList;
+$("#dd-q").onkeydown=e=>{if(e.key!=="Enter")return;$("#l-q").value=e.target.value.trim();e.target.value="";if(location.hash==="#dossiers")renderList();else location.hash="dossiers"};
+$("#l-new").onclick=()=>openNew();
+
+/* open the full DentaDesk file for a patient */
+function openFile(p){
+  $("#pform").reset();document.querySelector('.ptabs button[data-ptab="info"]').click();resetNid();$("#p-convdate").disabled=true;$("#p-epoux").disabled=true;
+  $("#photo").innerHTML='<svg class="i" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/></svg>';
+  document.querySelectorAll("#tags .tag").forEach(t=>t.remove());
+  document.querySelectorAll(".req").forEach(i=>i.classList.remove("bad"));
+  const set=(id,v)=>{if(v!==undefined&&v!==null)$(id).value=v};
+  set("#p-nom",p.nom);set("#p-prenom",p.prenom);set("#p-dob",p.dob);set("#p-tel",p.tel);set("#p-mail",p.mail);set("#p-prof",p.prof);
+  $("#p-sexe").value=p.sexe==="M"?"Masculin":p.sexe==="F"?"Féminin":"";
+  if(p.wil)$("#p-wil").value=p.wil;
+  set("#p-com",p.com);set("#p-cp",p.cp);set("#p-adr",p.adr);set("#p-urg",p.urg);set("#p-cni",p.cni);set("#p-pere",p.pere);set("#p-emp",p.emp);set("#p-cnas",p.cnas);set("#p-chifa",p.chifa||p.cnas);
+  if(p.cc)$("#p-cc").value=p.cc;
+  ["note","cat","cats","from","refcode","tel2","nom-ar","prenom-ar","epoux","convdate"].forEach(k=>{const key={"nom-ar":"nomAr","prenom-ar":"prenomAr","convdate":"convDate"}[k]||k;set("#p-"+k,p[key])});
+  ["sms","cmail","gs","med","sf"].forEach(k=>{if(p[k]!==undefined)$("#p-"+k).value=p[k]});
+  if(p.convOrg)$("#p-conv-org").value=p.convOrg;
+  $("#p-credit").value=p.credit||0;$("#p-conv").checked=!!p.conv;$("#p-convdate").disabled=!p.conv;$("#p-epoux").disabled=p.sf!=="Marié(e)";
+  fillBy();if(p.by)$("#p-by").value=p.by;
+  (p.remarks||[]).forEach(addTagVal);
+  CUR=p.id;
+  {const a=$("#p-age");a.readOnly=!!p.dob;a.value=p.dob?(parseInt(age(p.dob))||""):(p.ageY||"")}
+  $("#f-title").textContent=`Dossier de ${p.prenom} ${p.nom}`;
+  location.hash="dossier-patient";
+}
+
+function collectFile(){const v=id=>$(id).value.trim();return{nom:v("#p-nom").toUpperCase(),prenom:v("#p-prenom"),cc:$("#p-cc").value,tel:v("#p-tel"),
+  sexe:{Masculin:"M","Féminin":"F"}[$("#p-sexe").value]||"",dob:v("#p-dob"),ageY:$("#p-dob").value?"":v("#p-age"),wil:$("#p-wil").value,com:v("#p-com"),
+  remarks:[...document.querySelectorAll("#tags .tag")].map(t=>t.dataset.v),note:v("#p-note"),cat:v("#p-cat"),cats:v("#p-cats"),from:v("#p-from"),by:$("#p-by").value,refcode:v("#p-refcode"),
+  adr:v("#p-adr"),cp:v("#p-cp"),mail:v("#p-mail"),urg:v("#p-urg"),cni:v("#p-cni"),pere:v("#p-pere"),nomAr:v("#p-nom-ar"),prenomAr:v("#p-prenom-ar"),sf:$("#p-sf").value,epoux:v("#p-epoux"),
+  prof:v("#p-prof"),emp:v("#p-emp"),cnas:v("#p-cnas"),tel2:v("#p-tel2"),sms:$("#p-sms").value,cmail:$("#p-cmail").value,gs:$("#p-gs").value,med:$("#p-med").value,
+  credit:+$("#p-credit").value||0,conv:$("#p-conv").checked,convDate:v("#p-convdate"),chifa:v("#p-chifa"),convOrg:$("#p-conv-org").value}}
+function fillBy(){const sel=$("#p-by"),cur=sel.value;sel.innerHTML='<option value="">Choisir</option>'+PATIENTS.filter(p=>p.id!==CUR).map(p=>`<option value="${p.id}">${esc(p.nom+" "+p.prenom)}</option>`).join("");sel.value=cur}
+/* ===== modal Nouveau patient (Uli) ===== */
+$("#n-wil").innerHTML=$("#p-wil").innerHTML;
+function openNew(){
+  $("#np-form").reset();$("#n-age").readOnly=false;document.querySelectorAll("#np-form select.inp, #np-form input[type=date]").forEach(phSync);$("#n-adm").hidden=true;$("#n-addadm").hidden=false;
+  document.querySelectorAll(".nreq").forEach(i=>i.classList.remove("bad"));
+  $("#np-ov").hidden=false;setTimeout(()=>$("#n-nom").focus(),30);
+}
+const closeNew=()=>{$("#np-ov").hidden=true};
+document.querySelectorAll("[data-npclose]").forEach(b=>b.onclick=closeNew);
+$("#np-ov").addEventListener("click",e=>{if(e.target.id==="np-ov")closeNew()});
+addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#np-ov").hidden)closeNew()});
+$("#p-dob").oninput=()=>{const d=$("#p-dob").value,a=$("#p-age");if(d){const n=age(d);a.value=n?parseInt(n):"";a.readOnly=true}else{a.readOnly=false}};
+$("#n-dob").oninput=()=>{const d=$("#n-dob").value,a=$("#n-age");if(d){const n=age(d);a.value=n?parseInt(n):"";a.readOnly=true}else{a.readOnly=false}};
+$("#n-age").oninput=()=>{if($("#n-age").value&&!$("#n-dob").value)$("#n-age").readOnly=false};
+const phSync=el=>el.classList.toggle("ph",!el.value);
+document.querySelectorAll("#np-form select.inp, #np-form input[type=date]").forEach(el=>{phSync(el);el.addEventListener("input",()=>phSync(el));el.addEventListener("change",()=>phSync(el))});
+$("#n-addadm").onclick=()=>{$("#n-adm").hidden=false;$("#n-addadm").hidden=true};
+$("#n-hideadm").onclick=()=>{$("#n-adm").hidden=true;$("#n-addadm").hidden=false};
+document.querySelectorAll(".nreq").forEach(i=>i.addEventListener("input",()=>i.classList.remove("bad")));
+
+/* dossier : onglets Renseignements / Informations complémentaires (blue) */
+document.querySelectorAll(".ptabs button").forEach(b=>b.onclick=()=>{
+  document.querySelectorAll(".ptabs button").forEach(x=>{x.classList.toggle("on",x===b);x.setAttribute("aria-selected",x===b)});
+  $("#pt-info").hidden=b.dataset.ptab!=="info";$("#pt-more").hidden=b.dataset.ptab!=="more";
+});
+
+/* pièce d'identité (blue) */
+$("#nid-on").onchange=e=>$("#nid-g").hidden=!e.target.checked;
+document.querySelectorAll("input[data-nid]").forEach(inp=>inp.onchange=()=>{const f=inp.files[0];if(!f)return;const r=new FileReader(),box=$("#nid-"+inp.dataset.nid);
+  r.onload=()=>{box.querySelector("img")?.remove();const im=new Image();im.alt=inp.dataset.nid==="front"?"Recto de la pièce d’identité":"Verso de la pièce d’identité";im.src=r.result;box.prepend(im);box.classList.add("has")};r.readAsDataURL(f);inp.value=""});
+function resetNid(){$("#nid-on").checked=false;$("#nid-g").hidden=true;document.querySelectorAll(".nid-drop").forEach(b=>{b.querySelector("img")?.remove();b.classList.remove("has")})}
+$("#np-form").onsubmit=async e=>{
+  e.preventDefault();
+  const miss=[...document.querySelectorAll(".nreq")].filter(i=>!i.value.trim());
+  miss.forEach(i=>i.classList.add("bad"));
+  if(miss.length){miss[0].focus();toast("Nom et prénom sont obligatoires");return}
+  const v=id=>$(id).value.trim();
+  const p={num:nextNum(),nom:v("#n-nom").toUpperCase(),prenom:v("#n-prenom"),sexe:$("#n-genre").value,dob:v("#n-dob"),ageY:v("#n-dob")?"":v("#n-age"),tel:v("#n-tel"),cc:"DZ +213",mail:v("#n-mail"),cni:v("#n-cni"),urg:v("#n-urg"),pere:v("#n-pere"),cnas:v("#n-cnas"),adr:v("#n-adr"),com:v("#n-com"),wil:v("#n-wil"),cp:v("#n-cp"),prof:v("#n-prof"),emp:v("#n-emp"),remarks:[],lastVisit:"",created:Date.now(),updated:Date.now()};
+  const id=newId(),sb=$("#np-form button[type=submit]");sb.disabled=true;
+  try{await put("patients",id,p)}catch(err){sb.disabled=false;return}
+  sb.disabled=false;LASTNEW={...p,id};
+  closeNew();
+  if(location.hash==="#dossiers")renderList();
+  $("#nx-name").textContent=`${v("#n-prenom")} ${v("#n-nom").toUpperCase()}`;$("#nx-ov").hidden=false;setTimeout(()=>$("#nx-wait").focus(),30);
+};
+const closeNx=()=>{$("#nx-ov").hidden=true};
+$("#nx-later").onclick=()=>{closeNx();toast("Patient enregistré dans les dossiers.")};
+$("#nx-ov").addEventListener("click",e=>{if(e.target.id==="nx-ov")$("#nx-later").click()});
+addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#nx-ov").hidden)$("#nx-later").click()});
+$("#nx-wait").onclick=()=>{closeNx();if(LASTNEW)openArrival(LASTNEW)};
+/* entrée en salle d'attente */
+let ARR=null;
+function openArrival(p){ARR=p;
+  if(VISITS.some(v=>v.pid===p.id&&(v.etat==="En attente"||v.etat==="Actif"))){toast(`${p.prenom} ${p.nom} est déjà en salle d’attente.`);return}
+  $("#wv-form").reset();$("#wv-name").textContent=`${p.prenom} ${p.nom}`;$("#wv-ov").hidden=false;setTimeout(()=>$("#wv-motif").focus(),30)}
+const closeWv=()=>{$("#wv-ov").hidden=true};
+document.querySelectorAll("[data-wvclose]").forEach(b=>b.onclick=closeWv);
+$("#wv-ov").addEventListener("click",e=>{if(e.target.id==="wv-ov")closeWv()});
+addEventListener("keydown",e=>{if(e.key==="Escape"&&!$("#wv-ov").hidden)closeWv()});
+$("#wv-form").onsubmit=async e=>{e.preventDefault();const p=ARR;if(!p)return;const sb=$("#wv-form button[type=submit]");sb.disabled=true;
+  try{
+    await put("visits",newId(),{pid:p.id,date:todayKey(),nom:p.nom,prenom:p.prenom,rdv:$("#wv-rdv").value,arr:Date.now(),deb:null,fin:null,etat:"En attente",raison:$("#wv-motif").value.trim(),pay:0,mode:"",reste:0,poste:ROLE||"medecin"});
+    const cur=PATIENTS.find(x=>x.id===p.id);if(cur)put("patients",p.id,{...strip(cur),lastVisit:todayKey()}).catch(()=>{});
+    closeWv();WMODE="";toast(`${p.prenom} ${p.nom} est entré(e) en salle d’attente.`);
+    if(location.hash==="#salle-attente")renderWait();else location.hash="salle-attente";
+  }catch(err){}
+  sb.disabled=false};
+$("#f-wait").onclick=()=>{const p=PATIENTS.find(x=>x.id===CUR);if(!p){toast("Enregistrez d’abord le dossier.");return}openArrival(p)};
+$("#nx-plan").onclick=()=>{closeNx();toast("L’agenda sera construit dans une prochaine étape : le rendez-vous s’y enregistrera.")};
+route();applyRole();connect();
+</script>
+</body></html>
